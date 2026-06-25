@@ -13,4 +13,5 @@ import java.util.UUID;
 @AllArgsConstructor
 public class SaveVoteRequest {
     private List<UUID> candidateId;
+    private Long Version;
 }

@@ -1,12 +1,11 @@
-package org.day2.electionmanagmentsystem.Position;
+package org.day2.electionmanagmentsystem.position.repo;
 
-import lombok.Data;
 import org.day2.electionmanagmentsystem.election.Election;
+import org.day2.electionmanagmentsystem.position.ElectionPosition;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
 import java.util.List;
-import java.util.Optional;
 
 
 public interface ElectionPositionRepository extends JpaRepository<ElectionPosition,Long> {

@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @Data
 public class Election extends BaseEntity {
 
-    @Column(nullable = false)
     private String description;
     @Column(nullable = false)
     private String name;

@@ -1,6 +1,7 @@
 package org.day2.electionmanagmentsystem.common.exception;
 
 import org.day2.electionmanagmentsystem.common.dto.ApiResponse;
+import org.day2.electionmanagmentsystem.common.exception.ErrorCode.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

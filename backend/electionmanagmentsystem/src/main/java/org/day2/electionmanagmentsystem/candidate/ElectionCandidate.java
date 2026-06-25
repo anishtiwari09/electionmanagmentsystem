@@ -2,7 +2,7 @@ package org.day2.electionmanagmentsystem.candidate;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.day2.electionmanagmentsystem.Position.ElectionPosition;
+import org.day2.electionmanagmentsystem.position.ElectionPosition;
 import org.day2.electionmanagmentsystem.common.entity.BaseEntity;
 import org.day2.electionmanagmentsystem.user.User;
 

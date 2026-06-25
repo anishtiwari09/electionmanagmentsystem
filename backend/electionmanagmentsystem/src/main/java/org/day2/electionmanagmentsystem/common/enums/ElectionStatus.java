@@ -2,12 +2,18 @@ package org.day2.electionmanagmentsystem.common.enums;
 
 public enum ElectionStatus {
     DRAFT,
-
+    SCHEDULED,
     PUBLISHED,
 
-    OPEN,
-
+    ACTIVE,
+    INACTIVE,
     CLOSED,
 
-    ARCHIVED
+    ARCHIVED,
+    COMPLETED,
+
+
+    HOLD,
+
+
 }

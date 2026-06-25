@@ -25,7 +25,6 @@ private String lastName;
 private String email;
 @Column(nullable = false)
 private String  phone;
-@Column(nullable = false)
 private String passwordHash;
 private String address;
 @Enumerated(EnumType.STRING)

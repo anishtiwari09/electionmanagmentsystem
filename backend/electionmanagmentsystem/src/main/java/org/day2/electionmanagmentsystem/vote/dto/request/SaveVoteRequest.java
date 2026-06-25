@@ -1,4 +1,4 @@
-package org.day2.electionmanagmentsystem.vote.dto.response;
+package org.day2.electionmanagmentsystem.vote.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +12,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SaveVoteRequest {
-    private List<UUID> candidateId;
-    private Long Version;
+    private List<UUID> candidateIds;
+    private Long version;
 }

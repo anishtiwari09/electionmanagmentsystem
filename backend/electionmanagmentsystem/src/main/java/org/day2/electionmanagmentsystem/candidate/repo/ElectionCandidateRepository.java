@@ -1,6 +1,6 @@
-package org.day2.electionmanagmentsystem.candidate;
+package org.day2.electionmanagmentsystem.candidate.repo;
 
-import lombok.Getter;
+import org.day2.electionmanagmentsystem.candidate.ElectionCandidate;
 import org.day2.electionmanagmentsystem.position.ElectionPosition;
 
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,6 +1,7 @@
-package org.day2.electionmanagmentsystem.user.dto.response;
+package org.day2.electionmanagmentsystem.user.controller;
 
 import org.day2.electionmanagmentsystem.user.UserService;
+import org.day2.electionmanagmentsystem.user.dto.response.UserProfileResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class createElectionCandidateRequest {
+public class CreateElectionCandidateRequest {
 private UUID positionPublicId;
 private String firstName;
 private String lastName;

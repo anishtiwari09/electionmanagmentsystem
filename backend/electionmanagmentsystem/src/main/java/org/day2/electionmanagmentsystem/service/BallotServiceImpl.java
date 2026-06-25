@@ -1,14 +1,14 @@
 package org.day2.electionmanagmentsystem.service;
 
 import lombok.RequiredArgsConstructor;
-import org.day2.electionmanagmentsystem.Position.ElectionPosition;
-import org.day2.electionmanagmentsystem.Position.ElectionPositionRepository;
+import org.day2.electionmanagmentsystem.position.ElectionPosition;
+import org.day2.electionmanagmentsystem.position.repo.ElectionPositionRepository;
 import org.day2.electionmanagmentsystem.candidate.ElectionCandidate;
-import org.day2.electionmanagmentsystem.candidate.ElectionCandidateRepository;
+import org.day2.electionmanagmentsystem.candidate.repo.ElectionCandidateRepository;
 import org.day2.electionmanagmentsystem.common.exception.BusinessException;
-import org.day2.electionmanagmentsystem.common.exception.ErrorCode;
+import org.day2.electionmanagmentsystem.common.exception.ErrorCode.ErrorCode;
 import org.day2.electionmanagmentsystem.election.Election;
-import org.day2.electionmanagmentsystem.election.ElectionRepository;
+import org.day2.electionmanagmentsystem.election.repo.ElectionRepository;
 import org.day2.electionmanagmentsystem.user.User;
 import org.day2.electionmanagmentsystem.user.UserRepository;
 import org.day2.electionmanagmentsystem.vote.VoteTransaction;
@@ -17,7 +17,7 @@ import org.day2.electionmanagmentsystem.vote.dto.response.BallotCandidateRespons
 import org.day2.electionmanagmentsystem.vote.dto.response.BallotPositionResponse;
 import org.day2.electionmanagmentsystem.vote.dto.response.BallotResponse;
 import org.day2.electionmanagmentsystem.voter.ElectionVoter;
-import org.day2.electionmanagmentsystem.voter.ElectionVoterRepository;
+import org.day2.electionmanagmentsystem.voter.repo.ElectionVoterRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -38,7 +38,7 @@ public class BallotServiceImpl implements BallotService{
         Election election = electionRepository
                 .findByPublicId(electionPublicId)
                 .orElseThrow(() ->
-                        new BusinessException(ErrorCode.ElECTION_NOT_FOUND)
+                        new BusinessException(ErrorCode.ELECTION_NOT_FOUND)
                 );
         User user = userRepository.findByPublicId(userPublicId).orElseThrow(() -> new RuntimeException("User not found"));
 

@@ -1,12 +1,14 @@
 package org.day2.electionmanagmentsystem.vote;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.day2.electionmanagmentsystem.common.entity.BaseEntity;
 import org.day2.electionmanagmentsystem.common.enums.VoteActionType;
 import org.day2.electionmanagmentsystem.user.User;
 
 import java.time.LocalDateTime;
 @Entity
+@Data
 public class VoteAction extends BaseEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name = "vote_transaction_id",nullable = false)

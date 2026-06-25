@@ -32,7 +32,7 @@ public class VoteTransaction extends BaseEntity {
     private LocalDateTime submittedAt;
     @Column(precision = 5,scale = 4)
     private BigDecimal verificationScore;
-    @Column(length = 50,nullable = false)
+    @Column(length = 50)
     @Enumerated(EnumType.STRING)
     private VerificationProvider verificationProvider;
 

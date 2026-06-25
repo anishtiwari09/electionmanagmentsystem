@@ -2,9 +2,9 @@ package org.day2.electionmanagmentsystem.candidate.service;
 
 import java.util.UUID;
 
-public interface CreateElectionCandidateRequest {
+public interface CreateCandidateService {
     UUID createCandidate(UUID electionPublicId,
                          UUID userPublicId,
-                         CreateElectionCandidateRequest request);
+                         CreateCandidateService request);
 
 }

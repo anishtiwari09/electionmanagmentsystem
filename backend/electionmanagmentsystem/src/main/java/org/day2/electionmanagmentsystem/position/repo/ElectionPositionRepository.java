@@ -6,8 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 
 public interface ElectionPositionRepository extends JpaRepository<ElectionPosition,Long> {
      List<ElectionPosition> findByElectionOrderByNameAsc(Election election);
+
+    Optional<ElectionPosition> findByPublicIdAndElectionPublicId(UUID positionPublicId, UUID publicId);
 }

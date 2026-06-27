@@ -78,7 +78,7 @@ public class CreateCandidateServiceImpl implements CreateCandidateService{
                         position,
                         candidateUser
                 );
-        return electionCandidate.getPublicId();
+        return  electionCandidate.getPublicId();
 
     }
 

@@ -1,0 +1,27 @@
+{
+  "name": "electionmanagmentsystem",
+  "version": "1.0.0",
+  "private": true,
+  "repository": "git@github-second:anishtiwari09/electionmanagmentsystem.git",
+  "author": "atewari <atewari@dxlg.com>",
+  "license": "MIT",
+  "workspaces": [
+    "frontend/election-management-system-web"
+  ],
+  "scripts": {
+    "prepare": "husky",
+    "web:dev": "yarn workspace election-management-system-web dev",
+    "web:build": "yarn workspace election-management-system-web build",
+    "lint": "yarn workspace election-management-system-web lint",
+    "lint:fix": "yarn workspace election-management-system-web lint:fix",
+    "type-check": "yarn workspace election-management-system-web type-check",
+    "format": "yarn workspace election-management-system-web format",
+    "format:check": "yarn workspace election-management-system-web format:check",
+    "frontend": "yarn workspace election-management-system-web"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.1.0",
+    "@commitlint/config-conventional": "^21.1.0",
+    "husky": "^9.1.7"
+  }
+}

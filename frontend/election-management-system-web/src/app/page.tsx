@@ -1,9 +1,9 @@
-import Image from "next/image";
+import { LoginForm } from "@/features/auth/components/login-form";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      Hi
-    </div>
+    <main className="flex min-h-screen items-center justify-center px-4">
+      <LoginForm />
+    </main>
   );
 }

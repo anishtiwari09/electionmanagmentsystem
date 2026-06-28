@@ -30,7 +30,7 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR("Internal Server Error"),
     INVALID_CANDIDATE_SELECTION(
         "Invalid candidate selection"
-    ), UNAUTHORIZED("Unauthorized"), INVALID_ELECTION_NAME("Election name is required");
+    ), UNAUTHORIZED("Unauthorized"), INVALID_ELECTION_NAME("Election name is required"), USER_ALREADY_EXIST("A user account is already exist with this email please try with other email or login.");
     private final String message;
 
 }

@@ -1,13 +1,9 @@
-function getEnvironmentVariable(key: string): string {
-  const value = process.env[key];
+import { z } from "zod";
 
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${key}`);
-  }
+const envSchema = z.object({
+  NEXT_PUBLIC_API_BASE_URL: z.url(),
+});
 
-  return value;
-}
-
-export const env = {
-  API_BASE_URL: getEnvironmentVariable("NEXT_PUBLIC_API_BASE_URL"),
-} as const;
+export const env = envSchema.parse({
+  NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
+});

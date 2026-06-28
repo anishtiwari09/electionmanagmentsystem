@@ -8,14 +8,23 @@ import org.day2.electionmanagmentsystem.common.exception.ErrorCode.ErrorCode;
 import org.day2.electionmanagmentsystem.election.Election;
 import org.day2.electionmanagmentsystem.election.dto.request.ChangeElectionStatusRequest;
 import org.day2.electionmanagmentsystem.election.dto.request.CreateElectionRequest;
+import org.day2.electionmanagmentsystem.election.dto.request.GetElectionsRequest;
+import org.day2.electionmanagmentsystem.election.dto.response.ElectionResponse;
+import org.day2.electionmanagmentsystem.election.dto.response.ElectionsResponse;
 import org.day2.electionmanagmentsystem.election.repo.ElectionRepository;
 import org.day2.electionmanagmentsystem.user.User;
 import org.day2.electionmanagmentsystem.user.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 @Service
 @RequiredArgsConstructor
@@ -112,7 +121,7 @@ throw new BusinessException(ElectionErrorCode.NOT_ALLOWED);
         return election.getPublicId();
     }
   @Override
-public void changeElectionStatus(UUID userPublicId, ChangeElectionStatusRequest changeElectionStatusRequest){
+    public void changeElectionStatus(UUID userPublicId, ChangeElectionStatusRequest changeElectionStatusRequest){
         UUID electionId = changeElectionStatusRequest.getElectionPublicId();
         Election election = validateAndGetElection(electionId,userPublicId);
         ElectionStatus targetStatus=changeElectionStatusRequest.getElectionStatus();
@@ -136,6 +145,38 @@ public void changeElectionStatus(UUID userPublicId, ChangeElectionStatusRequest 
         }
 
 }
+
+    @Override
+
+    @Transactional(readOnly = true)
+    public ElectionsResponse getElections(UUID userPublicId, GetElectionsRequest request) {
+        userRepository.findByPublicId(userPublicId).orElseThrow(()-> new BusinessException(ErrorCode.UNAUTHORIZED));
+        Pageable pageable = PageRequest.of(
+               1,
+                5,
+                Sort.by(Sort.Direction.DESC, "updatedAt")
+        );
+
+       Page<Election> electionPage;
+        if(request.getStatus()!=null && !request.getStatus().isEmpty()){
+            electionPage = electionRepository.findByUserPublicIdAndStatusInOrderByUpdatedAtDesc(userPublicId,request.getStatus(),pageable);
+        }
+        else {
+            electionPage = electionRepository.findByUserPublicIdOrderByUpdatedAtDesc(userPublicId,pageable);
+        }
+        return ElectionsResponse.builder()
+                .size(electionPage.getSize())
+                .page(electionPage.getNumber())
+                .totalPages(electionPage.getTotalPages())
+                .totalElement(electionPage.getTotalElements())
+                .elections(electionPage.getContent()
+                        .stream()
+                        .map(this::toElectionResponse)
+                        .toList())
+                        .build();
+
+    }
+
 
     private void changeElectionStatusToHold(Election election) {
         ElectionStatus currentStatus=election.getStatus();
@@ -179,5 +220,16 @@ public void changeElectionStatus(UUID userPublicId, ChangeElectionStatusRequest 
         throw new BusinessException(ElectionErrorCode.NOT_ALLOWED);
     }
 
-
+    private ElectionResponse toElectionResponse(Election election) {
+        return ElectionResponse.builder()
+                .publicId(election.getPublicId())
+                .name(election.getName())
+                .description(election.getDescription())
+                .status(election.getStatus())
+                .startAt(election.getStartAt())
+                .endAt(election.getEndAt())
+                .createdAt(election.getCreatedAt())
+                .updatedAt(election.getUpdatedAt())
+                .build();
+    }
 }

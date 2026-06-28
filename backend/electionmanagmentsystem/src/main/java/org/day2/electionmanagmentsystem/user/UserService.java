@@ -15,7 +15,7 @@ public class UserService {
     private final UserRepository userRepository;
     public UserProfileResponse findByEmail(String email){
        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-       return UserProfileResponse.builder().publicId(user.getPublicId())
+       return UserProfileResponse.builder().userId(user.getPublicId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
@@ -32,7 +32,7 @@ public UserProfileResponse registerUser(RegisterRequest registerRequest){
          user.setLastName(registerRequest.getLastName().trim().toLowerCase());
          user.setStatus(UserStatus.ACTIVE);
          user = userRepository.save(user);
-        return UserProfileResponse.builder().publicId(user.getPublicId())
+        return UserProfileResponse.builder().userId(user.getPublicId())
             .firstName(user.getFirstName())
             .lastName(user.getLastName())
             .email(user.getEmail())

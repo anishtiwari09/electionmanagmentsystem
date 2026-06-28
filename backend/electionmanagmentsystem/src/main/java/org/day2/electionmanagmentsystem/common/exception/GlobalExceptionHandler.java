@@ -6,13 +6,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(BusinessException.class)
+//    @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ApiResponse<Void>> handleBusinessException( BusinessException exception){
         ApiResponse<Void> response=
                 ApiResponse.<Void>builder()
@@ -26,7 +27,7 @@ public class GlobalExceptionHandler {
                         .status(HttpStatus.BAD_REQUEST)
                         .body(response);
     }
-@ExceptionHandler(MethodArgumentNotValidException.class)
+//@ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Void>> handleTypeMismatchException(MethodArgumentNotValidException exception){
         ApiResponse<Void> response =
                 ApiResponse.<Void>builder()
@@ -41,7 +42,7 @@ public class GlobalExceptionHandler {
 
     }
 
-    @ExceptionHandler(MissingRequestHeaderException.class)
+//    @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<ApiResponse<Void>> handleHeaderMissingException(MissingRequestHeaderException exception){
         ApiResponse<Void> response =
                 ApiResponse.<Void>builder()
@@ -55,7 +56,8 @@ public class GlobalExceptionHandler {
 
 
     }
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+
+//    @ExceptionHandler({MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class})
     public ResponseEntity<ApiResponse<Void>> handleException(){
         ApiResponse<Void> response =
                 ApiResponse.<Void>builder()
@@ -67,7 +69,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
-//    @ExceptionHandler(Exception.class) commenting for dev enviroment
+
+//    @ExceptionHandler(Exception.class) //commenting for dev enviroment
     public ResponseEntity<ApiResponse<Void>> handlException(){
         ApiResponse<Void> response =
                 ApiResponse.<Void>builder()

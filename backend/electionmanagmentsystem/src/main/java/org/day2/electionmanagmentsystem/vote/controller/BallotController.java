@@ -1,6 +1,6 @@
 package org.day2.electionmanagmentsystem.vote.controller;
 import lombok.RequiredArgsConstructor;
-import org.day2.electionmanagmentsystem.common.dto.ApiResponse;
+import org.day2.electionmanagmentsystem.common.dto.response.ApiResponse;
 import org.day2.electionmanagmentsystem.service.BallotService;
 import org.day2.electionmanagmentsystem.vote.dto.response.BallotResponse;
 import org.springframework.web.bind.annotation.GetMapping;

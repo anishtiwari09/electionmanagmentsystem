@@ -9,7 +9,7 @@ import java.util.UUID;
 @Builder
 @Data
 public class ElectionResponse {
-    private UUID publicId;
+    private UUID electionId;
 
     private String name;
 

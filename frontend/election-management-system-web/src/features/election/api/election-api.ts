@@ -1,12 +1,14 @@
 import { apiClient } from "@/api/client";
 import type { ApiResponse } from "@/api/types";
 
-import type { Election } from "../types/election";
+import type { CreateElectionRequest } from "../types/create-election-request";
+import type { CreateElectionResponse } from "../types/create-election-response";
+import type { Election, ElectionResponse } from "../types/election";
 import type { GetElectionsRequest } from "../types/get-elections-request";
 
 export const electionApi = {
   async getAll(userId: string, filters?: GetElectionsRequest) {
-    const { data } = await apiClient.get<ApiResponse<Election[]>>(
+    const { data } = await apiClient.get<ApiResponse<ElectionResponse>>(
       "/elections",
       {
         params: filters,
@@ -22,6 +24,20 @@ export const electionApi = {
   async getById(id: string) {
     const { data } = await apiClient.get<ApiResponse<Election>>(
       `/elections/${id}`
+    );
+
+    return data.data;
+  },
+
+  async create(userId: string, request: CreateElectionRequest) {
+    const { data } = await apiClient.post<ApiResponse<CreateElectionResponse>>(
+      "/elections",
+      request,
+      {
+        headers: {
+          "x-userId": userId,
+        },
+      }
     );
 
     return data.data;

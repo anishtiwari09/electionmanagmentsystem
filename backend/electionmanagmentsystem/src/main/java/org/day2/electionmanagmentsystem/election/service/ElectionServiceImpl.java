@@ -102,23 +102,25 @@ throw new BusinessException(ElectionErrorCode.NOT_ALLOWED);
 
     }
     @Override
-    public UUID createNewElection(UUID userPublicId, CreateElectionRequest createElectionRequest) {
+    public ElectionResponse createNewElection(UUID userPublicId, CreateElectionRequest createElectionRequest) {
         User user = userRepository.findByPublicId(userPublicId).orElseThrow(()-> new BusinessException(ErrorCode.USER_NOT_FOUND));
 //        Todo role check
 
         String electionName = createElectionRequest.getElectionName();
-        if(electionName == null || electionName.isBlank()){
-                throw new BusinessException(ErrorCode.INVALID_ELECTION_NAME);
-        }
+
 
         Election election = new Election();
         String description = createElectionRequest.getDescription();
-        election.setDescription(description==null?null:description.trim());
-        election.setName(electionName.trim());
+        election.setDescription(description.trim());
+        election.setName(electionName.trim().toLowerCase());
         election.setStatus(ElectionStatus.DRAFT);
         election.setUser(user);
+        election.setStartAt(createElectionRequest.getStartAt());
+        election.setEndAt(createElectionRequest.getEndAt());
         election = electionRepository.save(election);
-        return election.getPublicId();
+        return this.toElectionResponse(election);
+
+
     }
   @Override
     public void changeElectionStatus(UUID userPublicId, ChangeElectionStatusRequest changeElectionStatusRequest){
@@ -152,7 +154,7 @@ throw new BusinessException(ElectionErrorCode.NOT_ALLOWED);
     public ElectionsResponse getElections(UUID userPublicId, GetElectionsRequest request) {
         userRepository.findByPublicId(userPublicId).orElseThrow(()-> new BusinessException(ErrorCode.UNAUTHORIZED));
         Pageable pageable = PageRequest.of(
-               1,
+               0,
                 5,
                 Sort.by(Sort.Direction.DESC, "updatedAt")
         );
@@ -164,6 +166,7 @@ throw new BusinessException(ElectionErrorCode.NOT_ALLOWED);
         else {
             electionPage = electionRepository.findByUserPublicIdOrderByUpdatedAtDesc(userPublicId,pageable);
         }
+        System.out.println("printing name::::"+electionPage.getContent().size());
         return ElectionsResponse.builder()
                 .size(electionPage.getSize())
                 .page(electionPage.getNumber())
@@ -221,8 +224,9 @@ throw new BusinessException(ElectionErrorCode.NOT_ALLOWED);
     }
 
     private ElectionResponse toElectionResponse(Election election) {
+
         return ElectionResponse.builder()
-                .publicId(election.getPublicId())
+                .electionId(election.getPublicId())
                 .name(election.getName())
                 .description(election.getDescription())
                 .status(election.getStatus())

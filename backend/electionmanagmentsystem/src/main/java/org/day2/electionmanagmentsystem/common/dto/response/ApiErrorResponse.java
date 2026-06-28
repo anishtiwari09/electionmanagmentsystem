@@ -1,8 +1,7 @@
-package org.day2.electionmanagmentsystem.common.exception;
+package org.day2.electionmanagmentsystem.common.dto.response;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
 @Data
 @Builder
 @NoArgsConstructor
@@ -10,5 +9,5 @@ import java.time.LocalDateTime;
 public class ApiErrorResponse {
     private String code;
     private String message;
-    private LocalDateTime timeStamp;
+    private boolean success;
 }

@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 
-public enum PositionErrorCode {
+public enum PositionErrorCode implements BaseErrorCode{
     PositionErrorCode("Invalid ");
     final private String message;
 }

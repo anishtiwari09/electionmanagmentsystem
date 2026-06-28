@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 
-public enum ErrorCode {
+public enum ErrorCode implements BaseErrorCode{
     ELECTION_NOT_FOUND("Election not found"),
     USER_NOT_FOUND("User not found"),
     VOTER_NOT_ELIGIBLE("Voter is not eligible for vote"),

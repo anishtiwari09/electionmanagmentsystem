@@ -11,7 +11,6 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { Election } from "../types/election";
-import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/api/query-keys";
 import { electionApi } from "../api/election-api";
@@ -61,7 +60,7 @@ export function ElectionList({
     <div className="grid gap-4">
       {elections.map((election) => (
         <ElectionCard
-          key={election.id}
+          key={election?.electionId}
           election={election}
           onClick={onElectionClick}
         />
@@ -83,7 +82,7 @@ function ElectionCard({ election, onClick }: Readonly<ElectionCardProps>) {
     >
       <CardHeader className="flex flex-row items-start justify-between space-y-0">
         <div className="space-y-1">
-          <CardTitle>{election.title}</CardTitle>
+          <CardTitle>{election.name}</CardTitle>
 
           {election.description && (
             <CardDescription>{election.description}</CardDescription>
@@ -135,22 +134,19 @@ function StatusBadge({ status }: Readonly<StatusBadgeProps>) {
 }
 
 export default function ElectionListMain() {
-  const [userData, _] = useLocalStorage<UserDetails>(
+  const [userData] = useLocalStorage<UserDetails>(
     STORAGE_KEYS.ORGANIZER_USER_DETAILS,
     {} as UserDetails
   );
   const filters: GetElectionsRequest = {
     status: [ElectionStatus.ACTIVE, ElectionStatus.DRAFT],
   };
-  const {
-    data: elections = [],
-    isLoading,
-    error,
-  } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: queryKeys.elections.list(filters),
 
     queryFn: () => electionApi.getAll(userData.userId, filters),
   });
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -162,10 +158,10 @@ export default function ElectionListMain() {
           </p>
         </div>
 
-        <CreateElectionDialog />
+        <CreateElectionDialog filters={filters} userId={userData.userId} />
       </div>
 
-      <ElectionList elections={elections} isLoading={isLoading} />
+      <ElectionList elections={data?.elections || []} isLoading={isLoading} />
     </div>
   );
 }

@@ -1,7 +1,8 @@
 package org.day2.electionmanagmentsystem.common.exception;
 
-import org.day2.electionmanagmentsystem.common.dto.ApiResponse;
+import org.day2.electionmanagmentsystem.common.dto.response.ApiResponse;
 import org.day2.electionmanagmentsystem.common.exception.ErrorCode.ErrorCode;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,72 +16,44 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 public class GlobalExceptionHandler {
 //    @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ApiResponse<Void>> handleBusinessException( BusinessException exception){
-        ApiResponse<Void> response=
-                ApiResponse.<Void>builder()
-                        .success(false)
-                            .code(exception.getErrorCode().name())
-                        .message(exception.getErrorCode().getMessage())
-                        .data(null)
-                        .build();
-
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
-                        .body(response);
+                        .body(ApiResponse.error(exception.getErrorCode().name(),exception.getErrorCode().getMessage()));
     }
-//@ExceptionHandler(MethodArgumentNotValidException.class)
+@ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Void>> handleTypeMismatchException(MethodArgumentNotValidException exception){
-        ApiResponse<Void> response =
-                ApiResponse.<Void>builder()
-                        .code(ErrorCode.INVALID_REQUEST.name())
-                        .success(false)
-                        .message(ErrorCode.INVALID_REQUEST.getMessage())
-                        .data(null)
-                        .build();
+    String message = exception.getBindingResult()
+            .getFieldErrors()
+            .stream()
+            .findFirst()
+            .map(DefaultMessageSourceResolvable::getDefaultMessage)
+            .orElse(ErrorCode.INVALID_REQUEST.getMessage());
 
-        return ResponseEntity.badRequest().body(response);
+    return ResponseEntity.badRequest().body(ApiResponse.error(ErrorCode.INVALID_REQUEST.name(),message));
 
 
     }
 
 //    @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<ApiResponse<Void>> handleHeaderMissingException(MissingRequestHeaderException exception){
-        ApiResponse<Void> response =
-                ApiResponse.<Void>builder()
-                        .code(ErrorCode.INVALID_REQUEST_HEADER.name())
-                        .success(false)
-                        .message(ErrorCode.INVALID_REQUEST_HEADER.getMessage())
-                        .data(null)
-                        .build();
 
-        return ResponseEntity.badRequest().body(response);
+
+        return ResponseEntity.badRequest().body(ApiResponse.error(ErrorCode.INVALID_REQUEST_HEADER.name(),ErrorCode.INVALID_REQUEST_HEADER.getMessage()));
 
 
     }
 
 //    @ExceptionHandler({MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class})
-    public ResponseEntity<ApiResponse<Void>> handleException(){
-        ApiResponse<Void> response =
-                ApiResponse.<Void>builder()
-                        .code(ErrorCode.INVALID_REQUEST.name())
-                        .message(ErrorCode.INVALID_REQUEST.getMessage())
-                        .success(false)
-                        .data(null)
-                        .build();
-        return ResponseEntity.badRequest().body(response);
+    public ResponseEntity<ApiResponse<Void>> handleException(Exception exception){
+        String errorMessage=exception.getMessage().isBlank()?exception.getMessage():ErrorCode.INVALID_REQUEST.getMessage();
+        return ResponseEntity.badRequest().body(ApiResponse.error(ErrorCode.INVALID_REQUEST.name(),errorMessage));
     }
 
 
 //    @ExceptionHandler(Exception.class) //commenting for dev enviroment
-    public ResponseEntity<ApiResponse<Void>> handlException(){
-        ApiResponse<Void> response =
-                ApiResponse.<Void>builder()
-                        .code(ErrorCode.INTERNAL_SERVER_ERROR.name())
-                        .message(ErrorCode.INVALID_REQUEST.getMessage())
-                        .success(false)
-                        .data(null)
-                        .build();
+    public ResponseEntity<ApiResponse<Void>> handleException(){
 
-        return ResponseEntity.internalServerError().body(response);
+        return ResponseEntity.internalServerError().body(ApiResponse.error(ErrorCode.INTERNAL_SERVER_ERROR.name(),ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
 
     }
 

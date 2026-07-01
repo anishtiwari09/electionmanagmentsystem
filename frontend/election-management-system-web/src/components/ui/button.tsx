@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
+import { Slot, Slottable } from "@radix-ui/react-slot";
 import { Loader2 } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 
@@ -88,7 +88,7 @@ function Button({
   children,
   disabled,
   ...props
-}: ButtonProps) {
+}: Readonly<ButtonProps>) {
   const Component = asChild ? Slot : "button";
 
   return (
@@ -102,12 +102,17 @@ function Button({
         }),
         className
       )}
-      disabled={disabled || loading}
+      disabled={!asChild ? disabled || loading : undefined}
+      aria-disabled={asChild ? disabled || loading : undefined}
       {...props}
     >
-      {loading ? <Loader2 className="size-4 animate-spin" /> : leftIcon}
+      {loading ? (
+        <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+      ) : (
+        leftIcon
+      )}
 
-      {children}
+      <Slottable>{children}</Slottable>
 
       {!loading && rightIcon}
     </Component>

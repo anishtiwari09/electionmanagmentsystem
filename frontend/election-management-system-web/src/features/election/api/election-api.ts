@@ -3,8 +3,10 @@ import type { ApiResponse } from "@/api/types";
 
 import type { CreateElectionRequest } from "../types/create-election-request";
 import type { CreateElectionResponse } from "../types/create-election-response";
-import type { Election, ElectionResponse } from "../types/election";
+import type { ElectionResponse } from "../types/election";
+import type { ElectionDetails } from "../types/election-details";
 import type { GetElectionsRequest } from "../types/get-elections-request";
+import { CreateElectionPositionRequest } from "../types/create-election-position-request";
 
 export const electionApi = {
   async getAll(userId: string, filters?: GetElectionsRequest) {
@@ -21,9 +23,14 @@ export const electionApi = {
     return data.data;
   },
 
-  async getById(id: string) {
-    const { data } = await apiClient.get<ApiResponse<Election>>(
-      `/elections/${id}`
+  async getById(userId: string, publicId: string) {
+    const { data } = await apiClient.get<ApiResponse<ElectionDetails>>(
+      `/elections/${publicId}`,
+      {
+        headers: {
+          "x-userId": userId,
+        },
+      }
     );
 
     return data.data;
@@ -32,6 +39,24 @@ export const electionApi = {
   async create(userId: string, request: CreateElectionRequest) {
     const { data } = await apiClient.post<ApiResponse<CreateElectionResponse>>(
       "/elections",
+      request,
+      {
+        headers: {
+          "x-userId": userId,
+        },
+      }
+    );
+
+    return data.data;
+  },
+
+  async createPositions(
+    userId: string,
+    electionPublicId: string,
+    request: CreateElectionPositionRequest
+  ) {
+    const { data } = await apiClient.post<ApiResponse<void>>(
+      `/elections/${electionPublicId}/positions`,
       request,
       {
         headers: {

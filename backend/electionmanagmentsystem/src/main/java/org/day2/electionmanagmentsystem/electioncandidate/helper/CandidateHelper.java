@@ -1,12 +1,11 @@
-package org.day2.electionmanagmentsystem.candidate.helper;
+package org.day2.electionmanagmentsystem.electioncandidate.helper;
 
-import org.day2.electionmanagmentsystem.candidate.dto.request.CreateElectionCandidateRequest;
-import org.day2.electionmanagmentsystem.candidate.repo.ElectionCandidateRepository;
+import org.day2.electionmanagmentsystem.electioncandidate.dto.request.CreateElectionCandidateRequest;
+import org.day2.electionmanagmentsystem.electioncandidate.repo.ElectionCandidateRepository;
 import org.day2.electionmanagmentsystem.common.exception.BusinessException;
 import org.day2.electionmanagmentsystem.common.exception.ErrorCode.CandidateErrorCode;
 import org.day2.electionmanagmentsystem.common.exception.ErrorCode.ErrorCode;
 import org.day2.electionmanagmentsystem.election.Election;
-import org.day2.electionmanagmentsystem.election.repo.ElectionRepository;
 import org.day2.electionmanagmentsystem.position.ElectionPosition;
 import org.day2.electionmanagmentsystem.position.repo.ElectionPositionRepository;
 import org.day2.electionmanagmentsystem.user.User;

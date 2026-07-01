@@ -7,7 +7,7 @@ import org.day2.electionmanagmentsystem.position.dto.request.CreateElectionPosit
 
 public class ElectionPositonHelper {
     static public void validateCreatePositionRequest(Election election, CreateElectionPositionRequest request){
-        String name = request.getName();
+        String name = request.getPositionName();
         if(name==null|| name.isBlank())  throw new BusinessException(
                 ErrorCode.INVALID_REQUEST
         );

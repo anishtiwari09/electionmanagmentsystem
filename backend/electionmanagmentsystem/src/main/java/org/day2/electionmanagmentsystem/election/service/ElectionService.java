@@ -4,6 +4,7 @@ import org.day2.electionmanagmentsystem.election.Election;
 import org.day2.electionmanagmentsystem.election.dto.request.CreateElectionRequest;
 import org.day2.electionmanagmentsystem.election.dto.request.ChangeElectionStatusRequest;
 import org.day2.electionmanagmentsystem.election.dto.request.GetElectionsRequest;
+import org.day2.electionmanagmentsystem.election.dto.response.ElectionDetailsResponse;
 import org.day2.electionmanagmentsystem.election.dto.response.ElectionResponse;
 import org.day2.electionmanagmentsystem.election.dto.response.ElectionsResponse;
 import org.springframework.stereotype.Service;
@@ -18,4 +19,6 @@ public interface ElectionService {
             UUID userPublicId,
             GetElectionsRequest request
     );
+
+    ElectionDetailsResponse getElectionDetails(UUID electionId, UUID userId);
 }

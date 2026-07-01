@@ -1,6 +1,7 @@
-package org.day2.electionmanagmentsystem.candidate.repo;
+package org.day2.electionmanagmentsystem.electioncandidate.repo;
 
-import org.day2.electionmanagmentsystem.candidate.ElectionCandidate;
+import org.day2.electionmanagmentsystem.electioncandidate.ElectionCandidate;
+import org.day2.electionmanagmentsystem.election.Election;
 import org.day2.electionmanagmentsystem.position.ElectionPosition;
 
 import org.day2.electionmanagmentsystem.user.User;
@@ -19,4 +20,8 @@ public interface ElectionCandidateRepository extends JpaRepository<ElectionCandi
     List <ElectionCandidate> findByPublicIdIn(List <UUID> publicIds);
 
     boolean existsByPositionAndUser(ElectionPosition position, User user);
+
+    List<ElectionCandidate> findByPositionIn(List <ElectionPosition> electionPosition);
+
+//    <Election> List<ElectionCandidate> findByElection(Election election);
 }

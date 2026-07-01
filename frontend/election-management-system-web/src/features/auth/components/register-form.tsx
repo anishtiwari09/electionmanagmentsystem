@@ -28,7 +28,7 @@ export function RegisterForm() {
       firstName: "",
       lastName: "",
       email: "",
-      publicId: "",
+      userId: "",
     }
   );
 

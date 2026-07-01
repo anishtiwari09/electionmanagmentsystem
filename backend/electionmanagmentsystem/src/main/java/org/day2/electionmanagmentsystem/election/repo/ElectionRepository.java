@@ -2,6 +2,7 @@ package org.day2.electionmanagmentsystem.election.repo;
 
 import org.day2.electionmanagmentsystem.common.enums.ElectionStatus;
 import org.day2.electionmanagmentsystem.election.Election;
+import org.day2.electionmanagmentsystem.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,4 +23,6 @@ public interface ElectionRepository extends JpaRepository<Election,Long> {
             Pageable pageable
 
     );
+
+    UUID user(User user);
 }

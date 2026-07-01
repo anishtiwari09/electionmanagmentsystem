@@ -20,6 +20,7 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import { STORAGE_KEYS } from "@/constants/storage-keys";
 import { UserDetails } from "@/features/auth/types/user-details";
 import { CreateElectionDialog } from "./create-election-dialog";
+import { useRouter } from "next/navigation";
 
 interface ElectionListProps {
   elections: Election[];
@@ -134,6 +135,7 @@ function StatusBadge({ status }: Readonly<StatusBadgeProps>) {
 }
 
 export default function ElectionListMain() {
+  const router = useRouter();
   const [userData] = useLocalStorage<UserDetails>(
     STORAGE_KEYS.ORGANIZER_USER_DETAILS,
     {} as UserDetails
@@ -161,7 +163,13 @@ export default function ElectionListMain() {
         <CreateElectionDialog filters={filters} userId={userData.userId} />
       </div>
 
-      <ElectionList elections={data?.elections || []} isLoading={isLoading} />
+      <ElectionList
+        elections={data?.elections || []}
+        isLoading={isLoading}
+        onElectionClick={(election) => {
+          router.push(`/dashboard/elections/${election.electionId}`);
+        }}
+      />
     </div>
   );
 }

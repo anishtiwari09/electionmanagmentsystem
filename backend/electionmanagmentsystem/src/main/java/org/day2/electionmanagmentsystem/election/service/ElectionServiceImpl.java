@@ -1,6 +1,12 @@
 package org.day2.electionmanagmentsystem.election.service;
 
 import lombok.RequiredArgsConstructor;
+import org.day2.electionmanagmentsystem.election.dto.response.ElectionDetailsResponse;
+import org.day2.electionmanagmentsystem.election.mapper.ElectionMapper;
+import org.day2.electionmanagmentsystem.electioncandidate.ElectionCandidate;
+import org.day2.electionmanagmentsystem.electioncandidate.dto.response.ElectionCandidateResponse;
+import org.day2.electionmanagmentsystem.electioncandidate.mapper.ElectionCandidateMapper;
+import org.day2.electionmanagmentsystem.electioncandidate.repo.ElectionCandidateRepository;
 import org.day2.electionmanagmentsystem.common.enums.ElectionStatus;
 import org.day2.electionmanagmentsystem.common.exception.BusinessException;
 import org.day2.electionmanagmentsystem.common.exception.ErrorCode.ElectionErrorCode;
@@ -12,18 +18,26 @@ import org.day2.electionmanagmentsystem.election.dto.request.GetElectionsRequest
 import org.day2.electionmanagmentsystem.election.dto.response.ElectionResponse;
 import org.day2.electionmanagmentsystem.election.dto.response.ElectionsResponse;
 import org.day2.electionmanagmentsystem.election.repo.ElectionRepository;
+import org.day2.electionmanagmentsystem.position.ElectionPosition;
+import org.day2.electionmanagmentsystem.position.dto.response.ElectionPositionResponse;
+import org.day2.electionmanagmentsystem.position.mapper.ElectionPositionMapper;
+import org.day2.electionmanagmentsystem.position.repo.ElectionPositionRepository;
 import org.day2.electionmanagmentsystem.user.User;
 import org.day2.electionmanagmentsystem.user.UserRepository;
+import org.day2.electionmanagmentsystem.voter.ElectionVoter;
+import org.day2.electionmanagmentsystem.voter.dto.response.ElectionVoterResponse;
+import org.day2.electionmanagmentsystem.voter.mapper.ElectionVoterMapper;
+import org.day2.electionmanagmentsystem.voter.repo.ElectionVoterRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDateTime;
+
 import java.util.List;
 import java.util.UUID;
 @Service
@@ -32,6 +46,13 @@ import java.util.UUID;
 public class ElectionServiceImpl implements ElectionService{
     private final UserRepository userRepository;
     private final ElectionRepository electionRepository;
+    private final ElectionVoterRepository electionVoterRepository;
+
+    private final ElectionCandidateRepository electionCandidateRepository;
+    private final ElectionPositionRepository electionPositionRepository;
+    private final ElectionPositionMapper electionPositionMapper;
+   private final ElectionMapper electionMapper;
+    private final ElectionVoterMapper electionVoterMapper;
 
     private final Election validateAndGetElection(UUID electionPublicId, UUID userPublicId){
         Election election = electionRepository.findByPublicId(electionPublicId).orElseThrow(()-> new BusinessException(ErrorCode.ELECTION_NOT_FOUND));
@@ -118,7 +139,7 @@ throw new BusinessException(ElectionErrorCode.NOT_ALLOWED);
         election.setStartAt(createElectionRequest.getStartAt());
         election.setEndAt(createElectionRequest.getEndAt());
         election = electionRepository.save(election);
-        return this.toElectionResponse(election);
+        return electionMapper.toElectionResponse(election);
 
 
     }
@@ -152,6 +173,7 @@ throw new BusinessException(ElectionErrorCode.NOT_ALLOWED);
 
     @Transactional(readOnly = true)
     public ElectionsResponse getElections(UUID userPublicId, GetElectionsRequest request) {
+
         userRepository.findByPublicId(userPublicId).orElseThrow(()-> new BusinessException(ErrorCode.UNAUTHORIZED));
         Pageable pageable = PageRequest.of(
                0,
@@ -166,7 +188,6 @@ throw new BusinessException(ElectionErrorCode.NOT_ALLOWED);
         else {
             electionPage = electionRepository.findByUserPublicIdOrderByUpdatedAtDesc(userPublicId,pageable);
         }
-        System.out.println("printing name::::"+electionPage.getContent().size());
         return ElectionsResponse.builder()
                 .size(electionPage.getSize())
                 .page(electionPage.getNumber())
@@ -174,10 +195,24 @@ throw new BusinessException(ElectionErrorCode.NOT_ALLOWED);
                 .totalElement(electionPage.getTotalElements())
                 .elections(electionPage.getContent()
                         .stream()
-                        .map(this::toElectionResponse)
+                        .map(electionMapper::toElectionResponse)
                         .toList())
                         .build();
 
+    }
+
+    @Override
+    public ElectionDetailsResponse getElectionDetails(UUID electionId, UUID userId) {
+        Election election = electionRepository.findByPublicIdAndUserPublicId(electionId,userId).orElseThrow(()-> new BusinessException(ErrorCode.ELECTION_NOT_FOUND));
+        List<ElectionVoter> electionVoters =electionVoterRepository.findByElection(election);
+        List <ElectionPosition> electionPositions= electionPositionRepository.findByElectionOrderByNameAsc(election);
+        List <ElectionVoterResponse> electionVoterResponses = electionVoterMapper.toResponses(electionVoters);
+        List <ElectionCandidate> electionCandidates=null;
+        if(!electionPositions.isEmpty())
+            electionCandidates =electionCandidateRepository.findByPositionIn(electionPositions);
+
+        List <ElectionPositionResponse> electionPositionResponseList= electionPositionMapper.toResponses(electionPositions,electionCandidates);
+        return electionMapper.toDetailsResponse(election,electionPositionResponseList,electionVoterResponses);
     }
 
 
@@ -223,17 +258,6 @@ throw new BusinessException(ElectionErrorCode.NOT_ALLOWED);
         throw new BusinessException(ElectionErrorCode.NOT_ALLOWED);
     }
 
-    private ElectionResponse toElectionResponse(Election election) {
 
-        return ElectionResponse.builder()
-                .electionId(election.getPublicId())
-                .name(election.getName())
-                .description(election.getDescription())
-                .status(election.getStatus())
-                .startAt(election.getStartAt())
-                .endAt(election.getEndAt())
-                .createdAt(election.getCreatedAt())
-                .updatedAt(election.getUpdatedAt())
-                .build();
-    }
+
 }

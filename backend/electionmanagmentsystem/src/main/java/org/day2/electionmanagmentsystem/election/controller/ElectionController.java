@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.day2.electionmanagmentsystem.common.dto.response.ApiResponse;
 import org.day2.electionmanagmentsystem.election.dto.request.CreateElectionRequest;
 import org.day2.electionmanagmentsystem.election.dto.request.GetElectionsRequest;
+import org.day2.electionmanagmentsystem.election.dto.response.ElectionDetailsResponse;
 import org.day2.electionmanagmentsystem.election.dto.response.ElectionResponse;
 import org.day2.electionmanagmentsystem.election.dto.response.ElectionsResponse;
 import org.day2.electionmanagmentsystem.election.service.ElectionService;
@@ -34,5 +35,10 @@ public class ElectionController {
        ElectionResponse electionResponse= electionService.createNewElection(userId,createElectionRequest);
 
      return  ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(electionResponse));
+  }
+  @GetMapping("/elections/{electionId}")
+    public ResponseEntity<ApiResponse<ElectionDetailsResponse>> getElectionDetails(@PathVariable UUID electionId, @RequestHeader("x-userId") UUID userId){
+      ElectionDetailsResponse response = electionService.getElectionDetails(electionId, userId);
+      return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
   }
 }

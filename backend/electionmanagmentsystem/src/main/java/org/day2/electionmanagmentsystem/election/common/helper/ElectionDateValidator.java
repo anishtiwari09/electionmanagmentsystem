@@ -3,7 +3,6 @@ package org.day2.electionmanagmentsystem.election.common.helper;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.day2.electionmanagmentsystem.common.exception.ErrorCode.ElectionErrorCode;
-import org.day2.electionmanagmentsystem.common.exception.ErrorCode.ErrorCode;
 import org.day2.electionmanagmentsystem.election.dto.request.CreateElectionRequest;
 
 import java.time.LocalDateTime;

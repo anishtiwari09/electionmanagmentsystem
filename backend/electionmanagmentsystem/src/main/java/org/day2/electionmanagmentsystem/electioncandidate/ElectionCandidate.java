@@ -1,4 +1,4 @@
-package org.day2.electionmanagmentsystem.candidate;
+package org.day2.electionmanagmentsystem.electioncandidate;
 
 import jakarta.persistence.*;
 import lombok.Data;

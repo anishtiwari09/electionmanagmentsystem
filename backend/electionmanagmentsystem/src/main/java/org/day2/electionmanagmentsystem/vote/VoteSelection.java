@@ -2,7 +2,7 @@ package org.day2.electionmanagmentsystem.vote;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.day2.electionmanagmentsystem.candidate.ElectionCandidate;
+import org.day2.electionmanagmentsystem.electioncandidate.ElectionCandidate;
 import org.day2.electionmanagmentsystem.common.entity.BaseEntity;
 @Entity
 @Table(uniqueConstraints = {

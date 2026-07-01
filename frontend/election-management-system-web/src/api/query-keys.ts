@@ -8,15 +8,10 @@ export const queryKeys = {
   },
 
   elections: {
-    all: ["elections"] as const,
+    list: (filters?: unknown) => ["elections", "list", filters] as const,
 
-    lists: () => [...queryKeys.elections.all, "list"] as const,
+    details: (publicId: string) => ["elections", "details", publicId] as const,
 
-    list: (filters?: GetElectionsRequest) =>
-      [...queryKeys.elections.lists(), filters ?? {}] as const,
-
-    details: () => [...queryKeys.elections.all, "detail"] as const,
-
-    detail: (id: string) => [...queryKeys.elections.details(), id] as const,
+    create: () => ["elections", "create"] as const,
   },
 } as const;

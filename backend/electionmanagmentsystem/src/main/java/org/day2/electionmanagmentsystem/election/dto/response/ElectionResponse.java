@@ -1,13 +1,16 @@
 package org.day2.electionmanagmentsystem.election.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.day2.electionmanagmentsystem.common.enums.ElectionStatus;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 @Builder
 @Data
+
 public class ElectionResponse {
     private UUID electionId;
 

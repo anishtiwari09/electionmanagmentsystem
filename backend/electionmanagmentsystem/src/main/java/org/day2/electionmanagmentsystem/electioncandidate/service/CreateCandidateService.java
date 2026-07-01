@@ -1,6 +1,6 @@
-package org.day2.electionmanagmentsystem.candidate.service;
+package org.day2.electionmanagmentsystem.electioncandidate.service;
 
-import org.day2.electionmanagmentsystem.candidate.dto.request.CreateElectionCandidateRequest;
+import org.day2.electionmanagmentsystem.electioncandidate.dto.request.CreateElectionCandidateRequest;
 
 import java.util.UUID;
 

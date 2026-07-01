@@ -1,4 +1,4 @@
-package org.day2.electionmanagmentsystem.candidate.dto.request;
+package org.day2.electionmanagmentsystem.electioncandidate.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

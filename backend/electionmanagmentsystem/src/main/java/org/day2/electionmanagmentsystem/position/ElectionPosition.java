@@ -1,12 +1,18 @@
 package org.day2.electionmanagmentsystem.position;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.day2.electionmanagmentsystem.common.entity.BaseEntity;
 import org.day2.electionmanagmentsystem.election.Election;
 import org.hibernate.annotations.Check;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(uniqueConstraints = {
         @UniqueConstraint(
                 columnNames = {"election_id","name"}

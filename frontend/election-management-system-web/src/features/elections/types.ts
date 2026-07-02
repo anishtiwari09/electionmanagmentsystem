@@ -33,3 +33,13 @@ export interface Election {
 export interface ElectionPositionWithCandidate extends ElectionPosition {
   candidates: ElectionCandidateDto[];
 }
+
+export interface BulkUploadPositionItem {
+  electionPositionId: string;
+  numberOfCandidates: number;
+}
+
+export interface DownloadBulkSchemaRequest {
+  positions: BulkUploadPositionItem[];
+  electionId: string;
+}

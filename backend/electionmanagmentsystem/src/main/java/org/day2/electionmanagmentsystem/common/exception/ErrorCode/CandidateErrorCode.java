@@ -8,6 +8,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum CandidateErrorCode implements BaseErrorCode{
     CANDIDATE_ALREADY_EXISTS("Candidate is already registered with that position"),
-    INVALID_POSITION("Invalid position selection"), INVALID_FIRST_NAME_OR_LAST_NAME("first name or/and last name should not be blank");
+    INVALID_POSITION("Invalid position selection"), INVALID_FIRST_NAME_OR_LAST_NAME("first name or/and last name should not be blank"),INVALID_CANDIDATE_COUNT("Invalid candidate count or requested candidate count should be equal or more than maxSelection");
     final private String message;
 }

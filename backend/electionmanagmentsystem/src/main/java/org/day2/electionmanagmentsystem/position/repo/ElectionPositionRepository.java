@@ -27,4 +27,5 @@ public interface ElectionPositionRepository extends JpaRepository<ElectionPositi
             @Param("electionId") Long electionId,
             @Param("requestedNames") Set<String> requestedNames
     );
+    List<ElectionPosition> findByElection(Election election);
 }

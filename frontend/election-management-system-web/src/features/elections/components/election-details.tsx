@@ -38,8 +38,8 @@ export function ElectionDetails({ electionId }: Props) {
       });
     }
     return {
-      positions: [],
-      candidates: [],
+      positions,
+      candidates,
     };
   }, [data, isPending]);
 
@@ -64,7 +64,11 @@ export function ElectionDetails({ electionId }: Props) {
         userId={userData.userId}
       />
 
-      <CandidatesSection candidates={candidates} positions={positions} />
+      <CandidatesSection
+        candidates={candidates}
+        positions={positions}
+        electionId={electionId}
+      />
 
       <VotersSection voters={[]} />
     </div>

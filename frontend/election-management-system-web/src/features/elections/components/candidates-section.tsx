@@ -207,15 +207,16 @@ export function CandidatesSection({
       <SectionCard
         title="Election Candidates"
         actions={
-          candidates.length > 0 ? (
+          candidates.length === 0 ? (
+            bulkUploadButton
+          ) : (
             <div className="flex gap-2">
-              {bulkUploadButton}
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Candidate
               </Button>
             </div>
-          ) : undefined
+          )
         }
       >
         {candidates.length === 0 ? (

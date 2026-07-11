@@ -12,7 +12,7 @@ public class ElectionCandidateMapper {
     public ElectionCandidateResponse toResponse(ElectionCandidate candidate){
 
         return ElectionCandidateResponse.builder()
-                .candidateId(candidate.getPublicId())
+                .id(candidate.getPublicId())
                 .userId(candidate.getUser().getPublicId())
                 .firstName(candidate.getUser().getFirstName())
                 .lastName(candidate.getUser().getLastName())

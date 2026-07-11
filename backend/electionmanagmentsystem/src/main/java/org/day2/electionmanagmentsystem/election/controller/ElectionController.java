@@ -18,33 +18,33 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/elections")
 @RequiredArgsConstructor
 
 public class ElectionController {
   private final ElectionService electionService;
     private final CandidateService candidateService;
-  @GetMapping("/elections")
+  @GetMapping("")
    public ResponseEntity<ApiResponse<ElectionsResponse>> getElection(@ModelAttribute GetElectionsRequest electionsRequest,  @RequestHeader("x-userId") UUID userId){
 
       ElectionsResponse electionsResponse= electionService.getElections(userId,electionsRequest);
 
       return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(electionsResponse));
   }
-  @PostMapping("/elections")
+  @PostMapping("")
     public ResponseEntity<ApiResponse<ElectionResponse>> createElection(@Valid  @RequestBody CreateElectionRequest createElectionRequest, @RequestHeader("x-userId") UUID userId){
 
        ElectionResponse electionResponse= electionService.createNewElection(userId,createElectionRequest);
 
      return  ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(electionResponse));
   }
-  @GetMapping("/elections/{electionId}")
+  @GetMapping("/{electionId}")
     public ResponseEntity<ApiResponse<ElectionDetailsResponse>> getElectionDetails(@PathVariable UUID electionId, @RequestHeader("x-userId") UUID userId){
       ElectionDetailsResponse response = electionService.getElectionDetails(electionId, userId);
       return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
   }
 
-  @PostMapping("/elections/{electionId}/candidates/upload")
+  @PostMapping("/{electionId}/candidates/upload")
     public ResponseEntity<ApiResponse<Void>> bulkUploadCandidates(@PathVariable UUID electionId, @RequestParam("file") MultipartFile file,  @RequestHeader("x-userId") UUID userId){
       candidateService.uploadCandidates(electionId,userId,file) ;
       return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success());

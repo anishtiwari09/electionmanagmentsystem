@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/candidates")
 @RequiredArgsConstructor
 public class CandidateController {
     final private CandidateService candidateService;
-    @PostMapping("/candidates/generate-template")
+    @PostMapping("/generate-template")
 
     public ResponseEntity<byte[]> generateCandidateTemplate(@RequestHeader("x-userId") UUID userId,   @Valid @RequestBody GenerateCandidateTemplateRequest request){
         byte[] csv = candidateService.generateTemplate(

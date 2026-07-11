@@ -17,7 +17,6 @@ public class ElectionDetailsResponse {
     private List<ElectionVoterResponse> voters;
     private List <ElectionPositionResponse> positions;
     private UUID electionId;
-
     private String name;
 
     private String description;

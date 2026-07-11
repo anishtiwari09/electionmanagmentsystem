@@ -10,7 +10,7 @@ import java.util.UUID;
 @Builder
 public class ElectionVoterResponse {
     private UUID userId;
-    private UUID voterId;
+    private UUID id;
     private String firstName;
     private String lastName;
     private String email;

@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface ElectionVoterRepository extends JpaRepository<ElectionVoter,Long> {
+public interface VoterRepository extends JpaRepository<ElectionVoter,Long> {
     Optional <ElectionVoter> findByPublicId(String publicId);
     Optional <ElectionVoter> findByElectionAndUser(Election election, User user);
 

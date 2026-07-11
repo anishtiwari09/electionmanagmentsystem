@@ -16,7 +16,7 @@ public class ElectionVoterMapper {
 
     public ElectionVoterResponse toResponse(ElectionVoter voter){
         return ElectionVoterResponse.builder()
-                .voterId(voter.getPublicId())
+                .id(voter.getPublicId())
                 .userId(voter.getUser().getPublicId())
                 .firstName(voter.getUser().getFirstName())
                 .lastName(voter.getUser().getLastName())

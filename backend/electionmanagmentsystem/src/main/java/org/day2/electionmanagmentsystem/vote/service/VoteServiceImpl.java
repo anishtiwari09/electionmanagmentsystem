@@ -23,7 +23,7 @@ import org.day2.electionmanagmentsystem.vote.repo.VoteActionRepository;
 import org.day2.electionmanagmentsystem.vote.repo.VoteSelectionRepository;
 import org.day2.electionmanagmentsystem.vote.repo.VoteTransactionRepository;
 import org.day2.electionmanagmentsystem.voter.ElectionVoter;
-import org.day2.electionmanagmentsystem.voter.repo.ElectionVoterRepository;
+import org.day2.electionmanagmentsystem.voter.repo.VoterRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public class VoteServiceImpl implements VoteService{
     private final ElectionRepository electionRepository;
     private final UserRepository userRepository;
-    private final ElectionVoterRepository electionVoterRepository;
+    private final VoterRepository voterRepository;
     private final VoteTransactionRepository voteTransactionRepository;
     private final VoteSelectionRepository voteSelectionRepository;
     private final ElectionCandidateRepository electionCandidateRepository;
@@ -139,7 +139,7 @@ public class VoteServiceImpl implements VoteService{
         List <ElectionCandidate> candidates =validateAndLoadCandidate(election,saveVoteRequest);
 
         User user = userRepository.findByPublicId(userPublicId).orElseThrow(()-> new BusinessException(ErrorCode.USER_NOT_FOUND));
-        ElectionVoter electionVoter = electionVoterRepository.findByElectionAndUser(election, user).orElseThrow(()-> new BusinessException(ErrorCode.VOTER_NOT_ELIGIBLE));
+        ElectionVoter electionVoter = voterRepository.findByElectionAndUser(election, user).orElseThrow(()-> new BusinessException(ErrorCode.VOTER_NOT_ELIGIBLE));
         VoteTransaction latestVoteTransaction=voteTransactionRepository.findTopByElectionAndElectionVoterOrderByCreatedAtDesc(election,electionVoter).orElse(null);
         VoteStatus currentVoteStatus=latestVoteTransaction!=null ? latestVoteTransaction.getStatus():null;
 
@@ -203,7 +203,7 @@ public class VoteServiceImpl implements VoteService{
                                 )
                         );
         ElectionVoter electionVoter =
-                electionVoterRepository
+                voterRepository
                         .findByElectionAndUser(
                                 voteTransaction.getElection(),
                                 user

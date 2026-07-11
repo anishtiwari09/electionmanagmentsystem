@@ -25,7 +25,7 @@ import org.day2.electionmanagmentsystem.user.repo.UserRepository;
 import org.day2.electionmanagmentsystem.voter.ElectionVoter;
 import org.day2.electionmanagmentsystem.voter.dto.response.ElectionVoterResponse;
 import org.day2.electionmanagmentsystem.voter.mapper.ElectionVoterMapper;
-import org.day2.electionmanagmentsystem.voter.repo.ElectionVoterRepository;
+import org.day2.electionmanagmentsystem.voter.repo.VoterRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,7 +44,7 @@ import java.util.UUID;
 public class ElectionServiceImpl implements ElectionService{
     private final UserRepository userRepository;
     private final ElectionRepository electionRepository;
-    private final ElectionVoterRepository electionVoterRepository;
+    private final VoterRepository voterRepository;
 
     private final ElectionCandidateRepository electionCandidateRepository;
     private final ElectionPositionRepository electionPositionRepository;
@@ -202,7 +202,7 @@ throw new BusinessException(ElectionErrorCode.NOT_ALLOWED);
     @Override
     public ElectionDetailsResponse getElectionDetails(UUID electionId, UUID userId) {
         Election election = electionRepository.findByPublicIdAndUserPublicId(electionId,userId).orElseThrow(()-> new BusinessException(ErrorCode.ELECTION_NOT_FOUND));
-        List<ElectionVoter> electionVoters =electionVoterRepository.findByElection(election);
+        List<ElectionVoter> electionVoters = voterRepository.findByElection(election);
         List <ElectionPosition> electionPositions= electionPositionRepository.findByElectionOrderByNameAsc(election);
         List <ElectionVoterResponse> electionVoterResponses = electionVoterMapper.toResponses(electionVoters);
         List <ElectionCandidate> electionCandidates=null;

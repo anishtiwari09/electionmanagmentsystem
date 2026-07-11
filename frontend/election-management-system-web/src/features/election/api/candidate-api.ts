@@ -36,6 +36,7 @@ export const candidateApi = {
       {
         headers: {
           "x-userId": userId,
+          "Content-Type": "multipart/form-data",
         },
       }
     );

@@ -59,6 +59,10 @@ export function CandidatesSection({
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [step, setStep] = useState<"schema" | "upload">("schema");
   const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [hasExistingTemplate, setHasExistingTemplate] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<string[] | null>(
+    null
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [userData] = useLocalStorage<UserDetails>(
     STORAGE_KEYS.ORGANIZER_USER_DETAILS,
@@ -91,6 +95,8 @@ export function CandidatesSection({
     setCounts(initial);
     setStep("schema");
     setCsvFile(null);
+    setHasExistingTemplate(false);
+    setValidationErrors(null);
     setDialogOpen(true);
   };
 
@@ -224,7 +230,7 @@ export function CandidatesSection({
       </SectionCard>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Bulk Upload Candidates</DialogTitle>
             {step === "schema" ? (
@@ -235,7 +241,9 @@ export function CandidatesSection({
               </DialogDescription>
             ) : (
               <DialogDescription>
-                Schema downloaded. Upload the filled CSV file to add candidates.
+                {hasExistingTemplate
+                  ? "Upload your CSV file to add candidates."
+                  : "Schema downloaded. Upload the filled CSV file to add candidates."}
               </DialogDescription>
             )}
           </DialogHeader>
@@ -289,32 +297,64 @@ export function CandidatesSection({
                 })}
               </div>
 
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                  Cancel
-                </Button>
+              <DialogFooter className="sm:justify-between">
                 <Button
-                  onClick={handleCreateSchema}
-                  disabled={hasError || downloadSchema.isPending}
+                  variant="outline"
+                  onClick={() => {
+                    setStep("upload");
+                    setHasExistingTemplate(true);
+                  }}
                 >
-                  {downloadSchema.isPending ? (
-                    "Downloading..."
-                  ) : (
-                    <>
-                      <FileDown className="mr-2 h-4 w-4" />
-                      Create Bulk Schema
-                    </>
-                  )}
+                  Already have template
                 </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleCreateSchema}
+                    disabled={hasError || downloadSchema.isPending}
+                  >
+                    {downloadSchema.isPending ? (
+                      "Downloading..."
+                    ) : (
+                      <>
+                        <FileDown className="mr-2 h-4 w-4" />
+                        Create Bulk Schema
+                      </>
+                    )}
+                  </Button>
+                </div>
               </DialogFooter>
             </>
           ) : (
             <>
-              <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-400">
-                <CheckCircle2 className="h-4 w-4 shrink-0" />
-                Schema downloaded successfully. Fill in the CSV and upload it
-                below.
-              </div>
+              {hasExistingTemplate ? (
+                <div className="text-muted-foreground flex items-center gap-2 rounded-lg border p-3 text-sm">
+                  <Upload className="h-4 w-4 shrink-0" />
+                  Upload your CSV file with candidate data.
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-400">
+                  <CheckCircle2 className="h-4 w-4 shrink-0" />
+                  Schema downloaded successfully. Fill in the CSV and upload it
+                  below.
+                </div>
+              )}
+
+              {validationErrors && (
+                <div className="space-y-1 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-400">
+                  <p className="font-medium">Validation errors:</p>
+                  <ul className="list-inside list-disc space-y-0.5">
+                    {validationErrors.map((err, i) => (
+                      <li key={i}>{err}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Upload CSV File</label>
@@ -339,6 +379,8 @@ export function CandidatesSection({
                   onClick={() => {
                     setStep("schema");
                     setCsvFile(null);
+                    setHasExistingTemplate(false);
+                    setValidationErrors(null);
                   }}
                 >
                   Back

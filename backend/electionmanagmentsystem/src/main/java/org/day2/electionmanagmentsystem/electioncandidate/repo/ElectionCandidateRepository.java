@@ -22,6 +22,6 @@ public interface ElectionCandidateRepository extends JpaRepository<ElectionCandi
     boolean existsByPositionAndUser(ElectionPosition position, User user);
 
     List<ElectionCandidate> findByPositionIn(List <ElectionPosition> electionPosition);
-
+    boolean existsByPositionElection(Election election);
 //    <Election> List<ElectionCandidate> findByElection(Election election);
 }

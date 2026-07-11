@@ -7,9 +7,6 @@ import type { ApiErrorResponse } from "./types";
 
 export const apiClient = axios.create({
   baseURL: env.NEXT_PUBLIC_API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 apiClient.interceptors.response.use(

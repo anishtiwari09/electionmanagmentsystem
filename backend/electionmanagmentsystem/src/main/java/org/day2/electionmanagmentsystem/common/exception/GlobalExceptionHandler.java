@@ -11,6 +11,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -49,6 +50,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(ApiResponse.error(ErrorCode.INVALID_REQUEST.name(),errorMessage));
     }
 
+@ExceptionHandler(CsvValidationException.class)
+public ResponseEntity<ApiResponse<List<CsvValidationError>>> handleException(CsvValidationException exception){
+    return ResponseEntity.badRequest().body(
+            ApiResponse.<List<CsvValidationError>>builder()
+                    .success(false)
+                    .code(exception.getErrorCode().getCode())
+                    .message(exception.getErrorCode().getMessage())
+                    .data(exception.getErrors())
+                    .build()
+    );
+}
 
 //    @ExceptionHandler(Exception.class) //commenting for dev enviroment
     public ResponseEntity<ApiResponse<Void>> handleException(){

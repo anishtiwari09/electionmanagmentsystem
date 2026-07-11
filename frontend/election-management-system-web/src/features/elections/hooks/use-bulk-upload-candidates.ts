@@ -1,10 +1,11 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import type { ApiErrorResponse } from "@/api/types";
 import { candidateApi } from "@/features/election/api/candidate-api";
+import { queryKeys } from "@/api/query-keys";
 
 interface UseBulkUploadCandidatesParams {
   userId: string;
@@ -17,11 +18,16 @@ export function useBulkUploadCandidates({
   electionId,
   onSuccess,
 }: UseBulkUploadCandidatesParams) {
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (file: File) =>
-      candidateApi.uploadBulkCandidates(userId, electionId, file),
+    mutationFn: (file: File) => {
+      return candidateApi.uploadBulkCandidates(userId, electionId, file);
+    },
 
     onSuccess: () => {
+      queryClient.refetchQueries({
+        queryKey: queryKeys.elections.details(electionId),
+      });
       toast.success("Candidates uploaded successfully");
       onSuccess?.();
     },

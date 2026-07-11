@@ -3,9 +3,8 @@ package org.day2.electionmanagmentsystem.auth.controller;
 import lombok.RequiredArgsConstructor;
 import org.day2.electionmanagmentsystem.auth.dto.request.LoginRequest;
 import org.day2.electionmanagmentsystem.auth.dto.request.RegisterRequest;
-import org.day2.electionmanagmentsystem.user.User;
-import org.day2.electionmanagmentsystem.user.UserService;
 import org.day2.electionmanagmentsystem.user.dto.response.UserProfileResponse;
+import org.day2.electionmanagmentsystem.user.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

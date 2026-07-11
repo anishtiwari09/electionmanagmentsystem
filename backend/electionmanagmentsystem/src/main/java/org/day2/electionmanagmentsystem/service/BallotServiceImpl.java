@@ -10,7 +10,7 @@ import org.day2.electionmanagmentsystem.common.exception.ErrorCode.ErrorCode;
 import org.day2.electionmanagmentsystem.election.Election;
 import org.day2.electionmanagmentsystem.election.repo.ElectionRepository;
 import org.day2.electionmanagmentsystem.user.User;
-import org.day2.electionmanagmentsystem.user.UserRepository;
+import org.day2.electionmanagmentsystem.user.repo.UserRepository;
 import org.day2.electionmanagmentsystem.vote.VoteTransaction;
 import org.day2.electionmanagmentsystem.vote.repo.VoteTransactionRepository;
 import org.day2.electionmanagmentsystem.vote.dto.response.BallotCandidateResponse;

@@ -9,9 +9,11 @@ import org.day2.electionmanagmentsystem.election.dto.response.ElectionDetailsRes
 import org.day2.electionmanagmentsystem.election.dto.response.ElectionResponse;
 import org.day2.electionmanagmentsystem.election.dto.response.ElectionsResponse;
 import org.day2.electionmanagmentsystem.election.service.ElectionService;
+import org.day2.electionmanagmentsystem.electioncandidate.service.CandidateService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -20,8 +22,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 
 public class ElectionController {
-  final ElectionService electionService;
-
+  private final ElectionService electionService;
+    private final CandidateService candidateService;
   @GetMapping("/elections")
    public ResponseEntity<ApiResponse<ElectionsResponse>> getElection(@ModelAttribute GetElectionsRequest electionsRequest,  @RequestHeader("x-userId") UUID userId){
 
@@ -40,5 +42,11 @@ public class ElectionController {
     public ResponseEntity<ApiResponse<ElectionDetailsResponse>> getElectionDetails(@PathVariable UUID electionId, @RequestHeader("x-userId") UUID userId){
       ElectionDetailsResponse response = electionService.getElectionDetails(electionId, userId);
       return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
+  }
+
+  @PostMapping("/elections/{electionId}/candidates/upload")
+    public ResponseEntity<ApiResponse<Void>> bulkUploadCandidates(@PathVariable UUID electionId, @RequestParam("file") MultipartFile file,  @RequestHeader("x-userId") UUID userId){
+      candidateService.uploadCandidates(electionId,userId,file) ;
+      return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success());
   }
 }

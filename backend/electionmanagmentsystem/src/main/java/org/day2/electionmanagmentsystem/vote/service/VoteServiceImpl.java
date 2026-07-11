@@ -13,7 +13,7 @@ import org.day2.electionmanagmentsystem.common.exception.ErrorCode.ErrorCode;
 import org.day2.electionmanagmentsystem.election.Election;
 import org.day2.electionmanagmentsystem.election.repo.ElectionRepository;
 import org.day2.electionmanagmentsystem.user.User;
-import org.day2.electionmanagmentsystem.user.UserRepository;
+import org.day2.electionmanagmentsystem.user.repo.UserRepository;
 import org.day2.electionmanagmentsystem.vote.VoteAction;
 import org.day2.electionmanagmentsystem.vote.VoteSelection;
 import org.day2.electionmanagmentsystem.vote.VoteTransaction;

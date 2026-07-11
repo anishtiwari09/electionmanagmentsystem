@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.day2.electionmanagmentsystem.election.dto.response.ElectionDetailsResponse;
 import org.day2.electionmanagmentsystem.election.mapper.ElectionMapper;
 import org.day2.electionmanagmentsystem.electioncandidate.ElectionCandidate;
-import org.day2.electionmanagmentsystem.electioncandidate.dto.response.ElectionCandidateResponse;
-import org.day2.electionmanagmentsystem.electioncandidate.mapper.ElectionCandidateMapper;
 import org.day2.electionmanagmentsystem.electioncandidate.repo.ElectionCandidateRepository;
 import org.day2.electionmanagmentsystem.common.enums.ElectionStatus;
 import org.day2.electionmanagmentsystem.common.exception.BusinessException;
@@ -23,7 +21,7 @@ import org.day2.electionmanagmentsystem.position.dto.response.ElectionPositionRe
 import org.day2.electionmanagmentsystem.position.mapper.ElectionPositionMapper;
 import org.day2.electionmanagmentsystem.position.repo.ElectionPositionRepository;
 import org.day2.electionmanagmentsystem.user.User;
-import org.day2.electionmanagmentsystem.user.UserRepository;
+import org.day2.electionmanagmentsystem.user.repo.UserRepository;
 import org.day2.electionmanagmentsystem.voter.ElectionVoter;
 import org.day2.electionmanagmentsystem.voter.dto.response.ElectionVoterResponse;
 import org.day2.electionmanagmentsystem.voter.mapper.ElectionVoterMapper;

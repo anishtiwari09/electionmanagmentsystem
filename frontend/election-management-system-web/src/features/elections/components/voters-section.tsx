@@ -138,8 +138,8 @@ export function VotersSection({ voters, electionId }: Props) {
         </TableHeader>
 
         <TableBody>
-          {paginatedVoters.map((voter) => (
-            <TableRow key={voter.id}>
+          {paginatedVoters.map((voter, index) => (
+            <TableRow key={voter.id ?? index}>
               <TableCell className="font-medium">{voter.fullName}</TableCell>
 
               <TableCell>{voter.email}</TableCell>
@@ -183,7 +183,7 @@ export function VotersSection({ voters, electionId }: Props) {
             {Array.from({ length: totalPages }, (_, i) => (
               <Button
                 key={i}
-                variant={page === i ? "default" : "ghost"}
+                variant={page === i ? "primary" : "ghost"}
                 size="sm"
                 className="min-w-8"
                 onClick={() => setPage(i)}
@@ -262,8 +262,8 @@ export function VotersSection({ voters, electionId }: Props) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredVoters.slice(0, displayCount).map((voter) => (
-                <TableRow key={voter.id}>
+              {filteredVoters.slice(0, displayCount).map((voter, index) => (
+                <TableRow key={voter.id ?? index}>
                   <TableCell className="font-medium">
                     {voter.fullName}
                   </TableCell>

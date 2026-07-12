@@ -37,6 +37,12 @@ import { UserDetails } from "@/features/auth/types/user-details";
 import { STORAGE_KEYS } from "@/constants/storage-keys";
 import { ElectionCandidate, ElectionPositionWithCandidate } from "../types";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
   MoreHorizontal,
   Upload,
   Plus,
@@ -47,6 +53,8 @@ import {
   Eye,
   ChevronLeft,
   ChevronRight,
+  Filter,
+  X,
 } from "lucide-react";
 
 type Props = {
@@ -76,20 +84,28 @@ export function CandidatesSection({
 
   const [viewAllOpen, setViewAllOpen] = useState(false);
   const [viewAllSearch, setViewAllSearch] = useState("");
+  const [viewAllPositionFilter, setViewAllPositionFilter] = useState<string[]>(
+    []
+  );
   const itemsPerPage = 5;
 
-  const filteredCandidates = viewAllSearch
-    ? candidates.filter(
-        (c) =>
-          c.fullName.toLowerCase().includes(viewAllSearch.toLowerCase()) ||
-          c.email.toLowerCase().includes(viewAllSearch.toLowerCase()) ||
-          (
-            positions
-              .find((p) => p.electionPositionId === c.positionId)
-              ?.positionName.toLowerCase() || ""
-          ).includes(viewAllSearch.toLowerCase())
-      )
-    : candidates;
+  const filteredCandidates = candidates.filter((c) => {
+    const matchesSearch =
+      !viewAllSearch ||
+      c.fullName.toLowerCase().includes(viewAllSearch.toLowerCase()) ||
+      c.email.toLowerCase().includes(viewAllSearch.toLowerCase()) ||
+      (
+        positions
+          .find((p) => p.electionPositionId === c.positionId)
+          ?.positionName.toLowerCase() || ""
+      ).includes(viewAllSearch.toLowerCase());
+
+    const matchesPosition =
+      viewAllPositionFilter.length === 0 ||
+      viewAllPositionFilter.includes(c.positionId);
+
+    return matchesSearch && matchesPosition;
+  });
   const {
     page,
     setPage,
@@ -239,7 +255,7 @@ export function CandidatesSection({
             {Array.from({ length: totalPages }, (_, i) => (
               <Button
                 key={i}
-                variant={page === i ? "default" : "ghost"}
+                variant={page === i ? "primary" : "ghost"}
                 size="sm"
                 className="min-w-8"
                 onClick={() => setPage(i)}
@@ -306,13 +322,100 @@ export function CandidatesSection({
         open={viewAllOpen}
         onOpenChange={(open) => {
           setViewAllOpen(open);
-          if (!open) setViewAllSearch("");
+          if (!open) {
+            setViewAllSearch("");
+            setViewAllPositionFilter([]);
+          }
         }}
         title="All Candidates"
         totalCount={filteredCandidates.length}
         searchValue={viewAllSearch}
         onSearchChange={setViewAllSearch}
         searchPlaceholder="Search by name, email or position..."
+        filter={
+          <div className="flex flex-wrap items-center gap-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="h-8 gap-1.5">
+                  <Filter className="h-3.5 w-3.5" />
+                  Position
+                  {viewAllPositionFilter.length > 0 && (
+                    <span className="bg-primary text-primary-foreground ml-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-medium">
+                      {viewAllPositionFilter.length}
+                    </span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="start" className="w-56 p-2" sideOffset={8}>
+                <div className="space-y-1">
+                  {positions.map((position) => {
+                    const checked = viewAllPositionFilter.includes(
+                      position.electionPositionId
+                    );
+                    return (
+                      <label
+                        key={position.electionPositionId}
+                        className="hover:bg-muted flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors"
+                      >
+                        <Checkbox
+                          checked={checked}
+                          onCheckedChange={() =>
+                            setViewAllPositionFilter((prev) =>
+                              checked
+                                ? prev.filter(
+                                    (id) => id !== position.electionPositionId
+                                  )
+                                : [...prev, position.electionPositionId]
+                            )
+                          }
+                        />
+                        <span>{position.positionName}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+                {viewAllPositionFilter.length > 0 && (
+                  <button
+                    onClick={() => setViewAllPositionFilter([])}
+                    className="text-muted-foreground hover:text-foreground mt-2 w-full rounded-md px-2 py-1 text-xs transition-colors"
+                  >
+                    Clear all
+                  </button>
+                )}
+              </PopoverContent>
+            </Popover>
+
+            {viewAllPositionFilter.length > 0 && (
+              <div className="flex flex-wrap items-center gap-1.5">
+                {viewAllPositionFilter.map((id) => {
+                  const pos = positions.find(
+                    (p) => p.electionPositionId === id
+                  );
+                  if (!pos) return null;
+                  return (
+                    <Badge
+                      key={id}
+                      variant="secondary"
+                      className="gap-1 pr-1 text-xs"
+                    >
+                      {pos.positionName}
+                      <button
+                        onClick={() =>
+                          setViewAllPositionFilter((prev) =>
+                            prev.filter((p) => p !== id)
+                          )
+                        }
+                        className="hover:bg-muted-foreground/20 ml-0.5 rounded-sm p-0.5 transition-colors"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        }
       >
         {(displayCount) => (
           <Table>

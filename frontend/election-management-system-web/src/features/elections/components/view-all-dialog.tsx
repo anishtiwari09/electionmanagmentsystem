@@ -20,6 +20,7 @@ type Props = {
   searchPlaceholder?: string;
   searchValue?: string;
   onSearchChange?: (value: string) => void;
+  filter?: ReactNode;
   children: (displayCount: number) => ReactNode;
 };
 
@@ -31,6 +32,7 @@ export function ViewAllDialog({
   searchPlaceholder = "Search...",
   searchValue,
   onSearchChange,
+  filter,
   children,
 }: Props) {
   const [displayCount, setDisplayCount] = useState(() => {
@@ -87,6 +89,7 @@ export function ViewAllDialog({
               />
             </div>
           )}
+          {filter && <div className="mt-3">{filter}</div>}
         </DialogHeader>
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-0">

@@ -1,5 +1,4 @@
 import type { ElectionPositionWithCandidate } from "@/features/elections/types";
-import type { ElectionVoter } from "@/features/election/types/election-voter";
 
 export interface VoterCandidate {
   candidateId: string;
@@ -24,14 +23,15 @@ export interface VoteSelection {
   candidateIds: string[];
 }
 
-export interface VoterElection {
+export interface VoterElectionDetails {
   electionId: string;
   name: string;
   description?: string;
   status: string;
   startAt: string;
   endAt: string;
-  hasVoted: boolean;
+  voteStatus: string | null;
+  positions: VoterPosition[];
 }
 
 export function toVoterPositions(
@@ -51,26 +51,4 @@ export function toVoterPositions(
       positionId: pos.electionPositionId,
     })),
   }));
-}
-
-export function toVoterElection(
-  election: {
-    electionId: string;
-    name: string;
-    description?: string;
-    status: string;
-    startAt: string;
-    endAt: string;
-  },
-  voter?: ElectionVoter
-): VoterElection {
-  return {
-    electionId: election.electionId,
-    name: election.name,
-    description: election.description,
-    status: election.status,
-    startAt: election.startAt,
-    endAt: election.endAt,
-    hasVoted: voter?.hasVoted ?? false,
-  };
 }

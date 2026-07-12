@@ -1,20 +1,25 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { electionApi } from "@/features/election/api/election-api";
+import { voterApi } from "../api/voting-api";
 import { queryKeys } from "@/api/query-keys";
-import { toVoterPositions, toVoterElection } from "../types";
+import { toVoterPositions } from "../types";
 
 export function useVoterElection(electionId: string, userId: string) {
   return useQuery({
     queryKey: [...queryKeys.elections.details(electionId), "voter"],
     queryFn: async () => {
-      const data = await electionApi.getById(userId, electionId);
-      const matchingVoter = data.voters?.find(
-        (v) => v.publicId === userId || v.email === userId
-      );
+      const data = await voterApi.getVoterElection(userId, electionId);
       return {
-        election: toVoterElection(data, matchingVoter),
+        election: {
+          electionId: data.electionId,
+          name: data.name,
+          description: data.description,
+          status: data.status,
+          startAt: data.startAt,
+          endAt: data.endAt,
+          hasVoted: data.voteStatus !== null,
+        },
         positions: toVoterPositions(data.positions),
       };
     },

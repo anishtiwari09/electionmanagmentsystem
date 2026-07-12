@@ -56,7 +56,9 @@ export default function VoterElectionsPage() {
           elections={data?.elections || []}
           isLoading={isLoading}
           onElectionClick={(election) => {
-            router.push(`/dashboard/vote/${election.electionId}`);
+            if (election.status === "ACTIVE") {
+              router.push(`/dashboard/vote/${election.electionId}`);
+            }
           }}
         />
       )}

@@ -12,6 +12,8 @@ import { PreviewDialog } from "./preview-dialog";
 
 type Props = {
   electionName: string;
+  startAt?: string;
+  endAt?: string;
   positions: VoterPosition[];
   isPending: boolean;
   onSubmit: (selections: VoteSelection[]) => void;
@@ -19,8 +21,20 @@ type Props = {
   hasVoted: boolean;
 };
 
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export function Ballot({
   electionName,
+  startAt,
+  endAt,
   positions,
   isPending,
   onSubmit,
@@ -116,12 +130,18 @@ export function Ballot({
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{electionName}</h1>
           <p className="text-muted-foreground mt-1">
             Select your preferred candidates for each position.
           </p>
+          {(startAt || endAt) && (
+            <div className="text-muted-foreground mt-1 flex items-center gap-3 text-xs">
+              {startAt && <span>Starts: {formatDate(startAt)}</span>}
+              {endAt && <span>Ends: {formatDate(endAt)}</span>}
+            </div>
+          )}
         </div>
         {hasVoted && (
           <Badge variant="secondary" className="gap-1.5 px-3 py-1.5 text-sm">
@@ -131,155 +151,161 @@ export function Ballot({
         )}
       </div>
 
-      <div className="bg-card rounded-xl border p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Your Selections</span>
+      {totalMax > 0 && (
+        <div className="bg-card rounded-xl border p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">Your Selections</span>
+            </div>
+            <span className="text-muted-foreground text-sm">
+              <span className="text-foreground font-semibold">
+                {totalSelected}
+              </span>{" "}
+              of {totalMax} selected
+              {totalRequired > 0 && (
+                <span className="text-muted-foreground">
+                  {" "}
+                  (minimum {totalRequired})
+                </span>
+              )}
+            </span>
           </div>
-          <span className="text-muted-foreground text-sm">
-            <span className="text-foreground font-semibold">
-              {totalSelected}
-            </span>{" "}
-            of {totalMax} selected
-            {totalRequired > 0 && (
-              <span className="text-muted-foreground">
-                {" "}
-                (minimum {totalRequired})
-              </span>
-            )}
-          </span>
-        </div>
-        <div className="mt-3 flex gap-1">
-          <div className="bg-muted h-2 flex-1 overflow-hidden rounded-full">
-            <div
-              className="bg-primary h-full rounded-full transition-all duration-500"
-              style={{
-                width: `${Math.min((totalSelected / totalMax) * 100, 100)}%`,
-              }}
-            />
+          <div className="mt-3 flex gap-1">
+            <div className="bg-muted h-2 flex-1 overflow-hidden rounded-full">
+              <div
+                className="bg-primary h-full rounded-full transition-all duration-500"
+                style={{
+                  width: `${Math.min((totalSelected / totalMax) * 100, 100)}%`,
+                }}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="space-y-8">
-        {positions.map((position) => {
-          const progress = positionProgress[position.electionPositionId];
-          const isComplete = progress.selected >= progress.min;
-          const isFull = progress.selected >= progress.max;
+        {positions
+          .filter((p) => p.candidates.length > 0)
+          .map((position) => {
+            const progress = positionProgress[position.electionPositionId];
+            const isComplete = progress.selected >= progress.min;
+            const isFull = progress.selected >= progress.max;
 
-          return (
-            <section
-              key={position.electionPositionId}
-              className="bg-card rounded-xl border"
-            >
-              <div className="border-b p-5">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h2 className="text-lg font-semibold">
-                      {position.positionName}
-                    </h2>
-                    {position.description && (
-                      <p className="text-muted-foreground mt-0.5 text-sm">
-                        {position.description}
-                      </p>
-                    )}
+            return (
+              <section
+                key={position.electionPositionId}
+                className="bg-card rounded-xl border"
+              >
+                <div className="border-b p-5">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h2 className="text-lg font-semibold">
+                        {position.positionName}
+                      </h2>
+                      {position.description && (
+                        <p className="text-muted-foreground mt-0.5 text-sm">
+                          {position.description}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex shrink-0 items-center gap-1.5">
+                      {isComplete ? (
+                        <Badge className="bg-green-600 hover:bg-green-600">
+                          <CheckCheck className="mr-0.5 h-3 w-3" />
+                          {progress.selected}/{progress.min}
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline">
+                          {progress.selected}/{progress.min} needed
+                        </Badge>
+                      )}
+                      <span className="text-muted-foreground text-xs">
+                        {progress.selected > 0 && isFull
+                          ? "Max reached"
+                          : `Select up to ${progress.max}`}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex shrink-0 items-center gap-1.5">
-                    {isComplete ? (
-                      <Badge className="bg-green-600 hover:bg-green-600">
-                        <CheckCheck className="mr-0.5 h-3 w-3" />
-                        {progress.selected}/{progress.min}
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline">
-                        {progress.selected}/{progress.min} needed
-                      </Badge>
-                    )}
-                    <span className="text-muted-foreground text-xs">
-                      {progress.selected > 0 && isFull
-                        ? "Max reached"
-                        : `Select up to ${progress.max}`}
-                    </span>
-                  </div>
-                </div>
-                <div className="bg-muted mt-2 flex h-1.5 overflow-hidden rounded-full">
-                  <div
-                    className={`h-full rounded-full transition-all duration-300 ${
-                      isComplete ? "bg-green-500" : "bg-primary"
-                    }`}
-                    style={{
-                      width: `${(progress.selected / progress.max) * 100}%`,
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="p-5">
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {position.candidates.map((candidate) => {
-                    const isSelected = selections
-                      .get(position.electionPositionId)
-                      ?.includes(candidate.candidateId);
-
-                    return (
-                      <button
-                        key={candidate.candidateId}
-                        type="button"
-                        disabled={hasVoted || (isFull && !isSelected)}
-                        onClick={() =>
-                          handleToggle(
-                            position.electionPositionId,
-                            candidate.candidateId,
-                            position.maxSelection
-                          )
-                        }
-                        className={`group relative flex items-start gap-3 rounded-xl border p-4 text-left transition-all ${
-                          isSelected
-                            ? "border-primary bg-primary/5 ring-primary ring-1"
-                            : "hover:border-border/80 hover:bg-accent/50 border-border/50"
-                        } ${
-                          hasVoted || (isFull && !isSelected)
-                            ? "pointer-events-none opacity-50"
-                            : "cursor-pointer"
+                  {position.candidates.length > 0 && (
+                    <div className="bg-muted mt-2 flex h-1.5 overflow-hidden rounded-full">
+                      <div
+                        className={`h-full rounded-full transition-all duration-300 ${
+                          isComplete ? "bg-green-500" : "bg-primary"
                         }`}
-                      >
-                        {isSelected && (
-                          <div className="bg-primary text-primary-foreground absolute top-2 right-2 flex size-5 items-center justify-center rounded-full text-[11px] font-bold">
-                            {(selections
-                              .get(position.electionPositionId)
-                              ?.indexOf(candidate.candidateId) ?? -1) + 1}
-                          </div>
-                        )}
-
-                        <Avatar size="lg" className="shrink-0">
-                          {candidate.profileImage ? (
-                            <AvatarImage
-                              src={candidate.profileImage}
-                              alt={`${candidate.firstName} ${candidate.lastName}`}
-                            />
-                          ) : (
-                            <AvatarFallback>
-                              <ImageOff className="size-4" />
-                            </AvatarFallback>
-                          )}
-                        </Avatar>
-
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium">
-                            {candidate.firstName} {candidate.lastName}
-                          </p>
-                          <p className="text-muted-foreground truncate text-xs">
-                            {candidate.email}
-                          </p>
-                        </div>
-                      </button>
-                    );
-                  })}
+                        style={{
+                          width: `${(progress.selected / progress.max) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
-              </div>
-            </section>
-          );
-        })}
+
+                <div className="p-5">
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {position.candidates.map((candidate) => {
+                      const isSelected = selections
+                        .get(position.electionPositionId)
+                        ?.includes(candidate.candidateId);
+
+                      return (
+                        <button
+                          key={candidate.candidateId}
+                          type="button"
+                          disabled={hasVoted || (isFull && !isSelected)}
+                          onClick={() =>
+                            handleToggle(
+                              position.electionPositionId,
+                              candidate.candidateId,
+                              position.maxSelection
+                            )
+                          }
+                          className={`group relative flex items-start gap-3 rounded-xl border p-4 text-left transition-all ${
+                            isSelected
+                              ? "border-primary bg-primary/5 ring-primary ring-1"
+                              : "hover:border-border/80 hover:bg-accent/50 border-border/50"
+                          } ${
+                            hasVoted || (isFull && !isSelected)
+                              ? "pointer-events-none opacity-50"
+                              : "cursor-pointer"
+                          }`}
+                        >
+                          {isSelected && (
+                            <div className="bg-primary text-primary-foreground absolute top-2 right-2 flex size-5 items-center justify-center rounded-full text-[11px] font-bold">
+                              {(selections
+                                .get(position.electionPositionId)
+                                ?.indexOf(candidate.candidateId) ?? -1) + 1}
+                            </div>
+                          )}
+
+                          <Avatar size="lg" className="shrink-0">
+                            {candidate.profileImage ? (
+                              <AvatarImage
+                                src={candidate.profileImage}
+                                alt={`${candidate.firstName} ${candidate.lastName}`}
+                              />
+                            ) : (
+                              <AvatarFallback>
+                                <ImageOff className="size-4" />
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
+
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-medium">
+                              {candidate.firstName} {candidate.lastName}
+                            </p>
+                            <p className="text-muted-foreground truncate text-xs">
+                              {candidate.email}
+                            </p>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </section>
+            );
+          })}
       </div>
 
       <div className="flex items-center justify-between border-t pt-6">

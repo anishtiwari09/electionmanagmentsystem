@@ -8,6 +8,7 @@ import { UserDetails } from "@/features/auth/types/user-details";
 import { useVoterElection } from "@/features/voting/hooks/use-voter-election";
 import { Ballot } from "@/features/voting/components/ballot";
 import { ArrowLeft } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { VoteSelection } from "@/features/voting/types";
 import { toast } from "sonner";
@@ -32,7 +33,10 @@ export function BallotPageContent({ electionId }: Props) {
     {} as UserDetails
   );
 
-  const { data, isPending } = useVoterElection(electionId, userData?.userId);
+  const { data, isPending, isError } = useVoterElection(
+    electionId,
+    userData?.userId
+  );
 
   const handleSubmit = async (selections: VoteSelection[]) => {
     void selections;
@@ -55,6 +59,60 @@ export function BallotPageContent({ electionId }: Props) {
     );
   }
 
+  const electionStatus = data?.election.status;
+
+  if (electionStatus && electionStatus !== "ACTIVE") {
+    return (
+      <div className="container mx-auto max-w-4xl py-8">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => router.push("/dashboard/vote")}
+          className="mb-4"
+        >
+          <ArrowLeft className="mr-1 h-4 w-4" />
+          Back to Elections
+        </Button>
+        <Card>
+          <CardContent className="flex h-56 flex-col items-center justify-center text-center">
+            <p className="text-muted-foreground text-lg font-medium">
+              This election is not currently active.
+            </p>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Voting is only available during active elections.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="container mx-auto max-w-4xl py-8">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => router.push("/dashboard/vote")}
+          className="mb-4"
+        >
+          <ArrowLeft className="mr-1 h-4 w-4" />
+          Back to Elections
+        </Button>
+        <Card>
+          <CardContent className="flex h-56 flex-col items-center justify-center text-center">
+            <p className="text-muted-foreground text-lg font-medium">
+              Details not found
+            </p>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Please try after sometime.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto py-8">
       <Button
@@ -69,6 +127,8 @@ export function BallotPageContent({ electionId }: Props) {
 
       <Ballot
         electionName={data?.election.name ?? ""}
+        startAt={data?.election.startAt}
+        endAt={data?.election.endAt}
         positions={data?.positions ?? []}
         isPending={isPending}
         onSubmit={handleSubmit}

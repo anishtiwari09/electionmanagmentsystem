@@ -220,7 +220,6 @@ export function VotersSection({ voters, electionId }: Props) {
                   View All ({voters.length})
                 </Button>
               )}
-              {bulkUploadButton}
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Voter

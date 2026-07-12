@@ -27,9 +27,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { EmptyState } from "./empty-state";
 import { SectionCard } from "./section-card";
+import { ViewAllDialog } from "./view-all-dialog";
 import { useDownloadBulkVoterSchema } from "../hooks/use-download-bulk-voter-schema";
 import { useBulkUploadVoters } from "../hooks/use-bulk-upload-voters";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { usePagination } from "@/hooks/use-pagination";
 import { UserDetails } from "@/features/auth/types/user-details";
 import { STORAGE_KEYS } from "@/constants/storage-keys";
 import { ElectionVoter } from "../types";
@@ -40,6 +42,9 @@ import {
   Upload,
   FileDown,
   CheckCircle2,
+  Eye,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 type Props = {
@@ -57,6 +62,24 @@ export function VotersSection({ voters, electionId }: Props) {
     STORAGE_KEYS.ORGANIZER_USER_DETAILS,
     {} as UserDetails
   );
+
+  const itemsPerPage = 5;
+  const {
+    page,
+    setPage,
+    totalPages,
+    paginatedItems: paginatedVoters,
+  } = usePagination(voters, itemsPerPage);
+  const [viewAllOpen, setViewAllOpen] = useState(false);
+  const [viewAllSearch, setViewAllSearch] = useState("");
+
+  const filteredVoters = viewAllSearch
+    ? voters.filter(
+        (v) =>
+          v.fullName.toLowerCase().includes(viewAllSearch.toLowerCase()) ||
+          v.email.toLowerCase().includes(viewAllSearch.toLowerCase())
+      )
+    : voters;
 
   const downloadSchema = useDownloadBulkVoterSchema({
     userId: userData?.userId,
@@ -104,42 +127,82 @@ export function VotersSection({ voters, electionId }: Props) {
   );
 
   const voterTable = voters.length > 0 && (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead className="w-30 text-right">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-
-      <TableBody>
-        {voters.map((voter) => (
-          <TableRow key={voter.id}>
-            <TableCell className="font-medium">{voter.fullName}</TableCell>
-
-            <TableCell>{voter.email}</TableCell>
-
-            <TableCell className="text-right">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem className="text-destructive focus:text-destructive">
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Remove Voter
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </TableCell>
+    <>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead className="w-30 text-right">Actions</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+
+        <TableBody>
+          {paginatedVoters.map((voter) => (
+            <TableRow key={voter.id}>
+              <TableCell className="font-medium">{voter.fullName}</TableCell>
+
+              <TableCell>{voter.email}</TableCell>
+
+              <TableCell className="text-right">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem className="text-destructive focus:text-destructive">
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Remove Voter
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      {voters.length > itemsPerPage && (
+        <div className="flex items-center justify-between pt-4">
+          <p className="text-muted-foreground text-sm">
+            Showing {page * itemsPerPage + 1}-
+            {Math.min((page + 1) * itemsPerPage, voters.length)} of{" "}
+            {voters.length}
+          </p>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={page === 0}
+              onClick={() => setPage(page - 1)}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <Button
+                key={i}
+                variant={page === i ? "default" : "ghost"}
+                size="sm"
+                className="min-w-8"
+                onClick={() => setPage(i)}
+              >
+                {i + 1}
+              </Button>
+            ))}
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={page >= totalPages - 1}
+              onClick={() => setPage(page + 1)}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+    </>
   );
 
   return (
@@ -151,6 +214,12 @@ export function VotersSection({ voters, electionId }: Props) {
             bulkUploadButton
           ) : (
             <div className="flex gap-2">
+              {voters.length > itemsPerPage && (
+                <Button variant="outline" onClick={() => setViewAllOpen(true)}>
+                  <Eye className="mr-2 h-4 w-4" />
+                  View All ({voters.length})
+                </Button>
+              )}
               {bulkUploadButton}
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
@@ -170,6 +239,56 @@ export function VotersSection({ voters, electionId }: Props) {
           voterTable
         )}
       </SectionCard>
+
+      <ViewAllDialog
+        open={viewAllOpen}
+        onOpenChange={(open) => {
+          setViewAllOpen(open);
+          if (!open) setViewAllSearch("");
+        }}
+        title="All Voters"
+        totalCount={filteredVoters.length}
+        searchValue={viewAllSearch}
+        onSearchChange={setViewAllSearch}
+        searchPlaceholder="Search by name or email..."
+      >
+        {(displayCount) => (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead className="w-30 text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredVoters.slice(0, displayCount).map((voter) => (
+                <TableRow key={voter.id}>
+                  <TableCell className="font-medium">
+                    {voter.fullName}
+                  </TableCell>
+                  <TableCell>{voter.email}</TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem className="text-destructive focus:text-destructive">
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Remove Voter
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </ViewAllDialog>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-lg">

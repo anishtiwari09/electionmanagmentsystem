@@ -68,7 +68,7 @@ export function ElectionDetails({ electionId }: Props) {
         title={data.name}
         description={data.description}
         startDate={data.startAt}
-        endDate={data.startAt}
+        endDate={data.endAt}
       />
 
       <PositionsSection

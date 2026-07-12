@@ -28,9 +28,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { EmptyState } from "./empty-state";
 import { SectionCard } from "./section-card";
+import { ViewAllDialog } from "./view-all-dialog";
 import { useDownloadBulkSchema } from "../hooks/use-download-bulk-schema";
 import { useBulkUploadCandidates } from "../hooks/use-bulk-upload-candidates";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { usePagination } from "@/hooks/use-pagination";
 import { UserDetails } from "@/features/auth/types/user-details";
 import { STORAGE_KEYS } from "@/constants/storage-keys";
 import { ElectionCandidate, ElectionPositionWithCandidate } from "../types";
@@ -42,6 +44,9 @@ import {
   ArrowRightLeft,
   FileDown,
   CheckCircle2,
+  Eye,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 type Props = {
@@ -68,6 +73,29 @@ export function CandidatesSection({
     STORAGE_KEYS.ORGANIZER_USER_DETAILS,
     {} as UserDetails
   );
+
+  const [viewAllOpen, setViewAllOpen] = useState(false);
+  const [viewAllSearch, setViewAllSearch] = useState("");
+  const itemsPerPage = 5;
+
+  const filteredCandidates = viewAllSearch
+    ? candidates.filter(
+        (c) =>
+          c.fullName.toLowerCase().includes(viewAllSearch.toLowerCase()) ||
+          c.email.toLowerCase().includes(viewAllSearch.toLowerCase()) ||
+          (
+            positions
+              .find((p) => p.electionPositionId === c.positionId)
+              ?.positionName.toLowerCase() || ""
+          ).includes(viewAllSearch.toLowerCase())
+      )
+    : candidates;
+  const {
+    page,
+    setPage,
+    totalPages,
+    paginatedItems: paginatedCandidates,
+  } = usePagination(candidates, itemsPerPage);
 
   const downloadSchema = useDownloadBulkSchema({
     userId: userData?.userId,
@@ -150,7 +178,7 @@ export function CandidatesSection({
           </TableHeader>
 
           <TableBody>
-            {candidates.map((candidate) => (
+            {paginatedCandidates.map((candidate) => (
               <TableRow key={candidate.id}>
                 <TableCell className="font-medium">
                   {candidate.fullName}
@@ -192,6 +220,44 @@ export function CandidatesSection({
           </TableBody>
         </Table>
       )}
+      {candidates.length > itemsPerPage && (
+        <div className="flex items-center justify-between pt-4">
+          <p className="text-muted-foreground text-sm">
+            Showing {page * itemsPerPage + 1}-
+            {Math.min((page + 1) * itemsPerPage, candidates.length)} of{" "}
+            {candidates.length}
+          </p>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={page === 0}
+              onClick={() => setPage(page - 1)}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <Button
+                key={i}
+                variant={page === i ? "default" : "ghost"}
+                size="sm"
+                className="min-w-8"
+                onClick={() => setPage(i)}
+              >
+                {i + 1}
+              </Button>
+            ))}
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={page >= totalPages - 1}
+              onClick={() => setPage(page + 1)}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
     </>
   );
 
@@ -211,6 +277,12 @@ export function CandidatesSection({
             bulkUploadButton
           ) : (
             <div className="flex gap-2">
+              {candidates.length > itemsPerPage && (
+                <Button variant="outline" onClick={() => setViewAllOpen(true)}>
+                  <Eye className="mr-2 h-4 w-4" />
+                  View All ({candidates.length})
+                </Button>
+              )}
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Candidate
@@ -229,6 +301,68 @@ export function CandidatesSection({
           content
         )}
       </SectionCard>
+
+      <ViewAllDialog
+        open={viewAllOpen}
+        onOpenChange={(open) => {
+          setViewAllOpen(open);
+          if (!open) setViewAllSearch("");
+        }}
+        title="All Candidates"
+        totalCount={filteredCandidates.length}
+        searchValue={viewAllSearch}
+        onSearchChange={setViewAllSearch}
+        searchPlaceholder="Search by name, email or position..."
+      >
+        {(displayCount) => (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Position</TableHead>
+                <TableHead className="w-30 text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredCandidates.slice(0, displayCount).map((candidate) => (
+                <TableRow key={candidate.id}>
+                  <TableCell className="font-medium">
+                    {candidate.fullName}
+                  </TableCell>
+                  <TableCell>{candidate.email}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">
+                      {positions.find(
+                        (p) => p.electionPositionId === candidate.positionId
+                      )?.positionName ?? "-"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>
+                          <ArrowRightLeft className="mr-2 h-4 w-4" />
+                          Change Position
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive focus:text-destructive">
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Remove Candidate
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </ViewAllDialog>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-lg">

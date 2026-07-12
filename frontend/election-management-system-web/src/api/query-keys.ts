@@ -14,4 +14,8 @@ export const queryKeys = {
 
     create: () => ["elections", "create"] as const,
   },
+
+  voter: {
+    elections: (status?: string) => ["voter", "elections", status] as const,
+  },
 } as const;

@@ -3,11 +3,8 @@ package org.day2.electionmanagmentsystem.election.mapper;
 import org.day2.electionmanagmentsystem.election.Election;
 import org.day2.electionmanagmentsystem.election.dto.response.ElectionDetailsResponse;
 import org.day2.electionmanagmentsystem.election.dto.response.ElectionResponse;
-import org.day2.electionmanagmentsystem.position.ElectionPosition;
 import org.day2.electionmanagmentsystem.position.dto.response.ElectionPositionResponse;
-import org.day2.electionmanagmentsystem.voter.ElectionVoter;
 import org.day2.electionmanagmentsystem.voter.dto.response.ElectionVoterResponse;
-import org.day2.electionmanagmentsystem.voter.mapper.ElectionVoterMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

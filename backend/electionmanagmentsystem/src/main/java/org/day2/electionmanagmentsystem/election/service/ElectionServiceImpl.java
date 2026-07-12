@@ -22,7 +22,7 @@ import org.day2.electionmanagmentsystem.position.mapper.ElectionPositionMapper;
 import org.day2.electionmanagmentsystem.position.repo.ElectionPositionRepository;
 import org.day2.electionmanagmentsystem.user.User;
 import org.day2.electionmanagmentsystem.user.repo.UserRepository;
-import org.day2.electionmanagmentsystem.voter.ElectionVoter;
+import org.day2.electionmanagmentsystem.voter.Voter;
 import org.day2.electionmanagmentsystem.voter.dto.response.ElectionVoterResponse;
 import org.day2.electionmanagmentsystem.voter.mapper.ElectionVoterMapper;
 import org.day2.electionmanagmentsystem.voter.repo.VoterRepository;
@@ -202,9 +202,9 @@ throw new BusinessException(ElectionErrorCode.NOT_ALLOWED);
     @Override
     public ElectionDetailsResponse getElectionDetails(UUID electionId, UUID userId) {
         Election election = electionRepository.findByPublicIdAndUserPublicId(electionId,userId).orElseThrow(()-> new BusinessException(ErrorCode.ELECTION_NOT_FOUND));
-        List<ElectionVoter> electionVoters = voterRepository.findByElection(election);
+        List<Voter> voters = voterRepository.findByElection(election);
         List <ElectionPosition> electionPositions= electionPositionRepository.findByElectionOrderByNameAsc(election);
-        List <ElectionVoterResponse> electionVoterResponses = electionVoterMapper.toResponses(electionVoters);
+        List <ElectionVoterResponse> electionVoterResponses = electionVoterMapper.toResponses(voters);
         List <ElectionCandidate> electionCandidates=null;
         if(!electionPositions.isEmpty())
             electionCandidates =electionCandidateRepository.findByPositionIn(electionPositions);

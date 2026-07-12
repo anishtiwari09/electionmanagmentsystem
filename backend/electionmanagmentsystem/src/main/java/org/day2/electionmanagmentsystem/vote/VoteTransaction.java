@@ -2,13 +2,11 @@ package org.day2.electionmanagmentsystem.vote;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.day2.electionmanagmentsystem.common.entity.BaseEntity;
 import org.day2.electionmanagmentsystem.common.enums.VerificationProvider;
 import org.day2.electionmanagmentsystem.common.enums.VoteStatus;
 import org.day2.electionmanagmentsystem.election.Election;
-import org.day2.electionmanagmentsystem.voter.ElectionVoter;
+import org.day2.electionmanagmentsystem.voter.Voter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -21,7 +19,7 @@ public class VoteTransaction extends BaseEntity {
     private Election election;
     @ManyToOne(optional = false)
     @JoinColumn(name="voter_id",nullable = false)
-    private ElectionVoter electionVoter;
+    private Voter voter;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private VoteStatus status;

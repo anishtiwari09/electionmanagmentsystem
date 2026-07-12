@@ -16,13 +16,14 @@ import org.day2.electionmanagmentsystem.user.User;
 import org.day2.electionmanagmentsystem.user.repo.UserRepository;
 import org.day2.electionmanagmentsystem.vote.VoteAction;
 import org.day2.electionmanagmentsystem.vote.VoteSelection;
+
 import org.day2.electionmanagmentsystem.vote.VoteTransaction;
 import org.day2.electionmanagmentsystem.vote.dto.request.SaveVoteRequest;
 import org.day2.electionmanagmentsystem.vote.dto.request.SubmitVoteRequest;
 import org.day2.electionmanagmentsystem.vote.repo.VoteActionRepository;
 import org.day2.electionmanagmentsystem.vote.repo.VoteSelectionRepository;
 import org.day2.electionmanagmentsystem.vote.repo.VoteTransactionRepository;
-import org.day2.electionmanagmentsystem.voter.ElectionVoter;
+import org.day2.electionmanagmentsystem.voter.Voter;
 import org.day2.electionmanagmentsystem.voter.repo.VoterRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -139,8 +140,8 @@ public class VoteServiceImpl implements VoteService{
         List <ElectionCandidate> candidates =validateAndLoadCandidate(election,saveVoteRequest);
 
         User user = userRepository.findByPublicId(userPublicId).orElseThrow(()-> new BusinessException(ErrorCode.USER_NOT_FOUND));
-        ElectionVoter electionVoter = voterRepository.findByElectionAndUser(election, user).orElseThrow(()-> new BusinessException(ErrorCode.VOTER_NOT_ELIGIBLE));
-        VoteTransaction latestVoteTransaction=voteTransactionRepository.findTopByElectionAndElectionVoterOrderByCreatedAtDesc(election,electionVoter).orElse(null);
+        Voter voter = voterRepository.findByElectionAndUser(election, user).orElseThrow(()-> new BusinessException(ErrorCode.VOTER_NOT_ELIGIBLE));
+        VoteTransaction latestVoteTransaction=voteTransactionRepository.findTopByElectionAndVoterOrderByCreatedAtDesc(election, voter).orElse(null);
         VoteStatus currentVoteStatus=latestVoteTransaction!=null ? latestVoteTransaction.getStatus():null;
 
 
@@ -157,7 +158,7 @@ public class VoteServiceImpl implements VoteService{
             }
 
             voteTransaction.setElection(election);
-            voteTransaction.setElectionVoter(electionVoter);
+            voteTransaction.setVoter(voter);
             voteTransaction.setStatus(VoteStatus.DRAFT);
             voteTransaction = voteTransactionRepository.save(voteTransaction);
             saveVoteSelection(voteTransaction,candidates);
@@ -202,7 +203,7 @@ public class VoteServiceImpl implements VoteService{
                                         ErrorCode.VOTE_NOT_FOUND
                                 )
                         );
-        ElectionVoter electionVoter =
+        Voter voter =
                 voterRepository
                         .findByElectionAndUser(
                                 voteTransaction.getElection(),
@@ -217,9 +218,9 @@ public class VoteServiceImpl implements VoteService{
                 SaveVoteRequest.
                         builder().version(submitVoteRequest.getVersion()).build();
         validateVersion(voteTransaction,voteRequest);
-        if (!voteTransaction.getElectionVoter()
+        if (!voteTransaction.getVoter()
                 .getId()
-                .equals(electionVoter.getId())) {
+                .equals(voter.getId())) {
 
             throw new BusinessException(
                     ErrorCode.UNAUTHORIZED

@@ -1,6 +1,6 @@
 package org.day2.electionmanagmentsystem.voter.mapper;
 
-import org.day2.electionmanagmentsystem.voter.ElectionVoter;
+import org.day2.electionmanagmentsystem.voter.Voter;
 import org.day2.electionmanagmentsystem.voter.dto.response.ElectionVoterResponse;
 import org.springframework.stereotype.Component;
 
@@ -8,13 +8,13 @@ import java.util.List;
 
 @Component
 public class ElectionVoterMapper {
-    public List <ElectionVoterResponse> toResponses(List <ElectionVoter> voters){
+    public List <ElectionVoterResponse> toResponses(List <Voter> voters){
        return voters.stream()
                 .map(this::toResponse)
                 .toList();
     }
 
-    public ElectionVoterResponse toResponse(ElectionVoter voter){
+    public ElectionVoterResponse toResponse(Voter voter){
         return ElectionVoterResponse.builder()
                 .id(voter.getPublicId())
                 .userId(voter.getUser().getPublicId())

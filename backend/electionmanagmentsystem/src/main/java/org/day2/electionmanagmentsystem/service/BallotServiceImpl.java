@@ -16,7 +16,7 @@ import org.day2.electionmanagmentsystem.vote.repo.VoteTransactionRepository;
 import org.day2.electionmanagmentsystem.vote.dto.response.BallotCandidateResponse;
 import org.day2.electionmanagmentsystem.vote.dto.response.BallotPositionResponse;
 import org.day2.electionmanagmentsystem.vote.dto.response.BallotResponse;
-import org.day2.electionmanagmentsystem.voter.ElectionVoter;
+import org.day2.electionmanagmentsystem.voter.Voter;
 import org.day2.electionmanagmentsystem.voter.repo.VoterRepository;
 import org.springframework.stereotype.Service;
 
@@ -42,8 +42,8 @@ public class BallotServiceImpl implements BallotService{
                 );
         User user = userRepository.findByPublicId(userPublicId).orElseThrow(() -> new RuntimeException("User not found"));
 
-        ElectionVoter voter = voterRepository.findByElectionAndUser(election,user).orElseThrow(()-> new RuntimeException("Voter is not elgible for this election"));
-        Optional<VoteTransaction> latestVoteOptional = voteTransactionRepository.findTopByElectionAndElectionVoterOrderByCreatedAtDesc(election,voter);
+        Voter voter = voterRepository.findByElectionAndUser(election,user).orElseThrow(()-> new RuntimeException("Voter is not eligible for this election"));
+        Optional<VoteTransaction> latestVoteOptional = voteTransactionRepository.findTopByElectionAndVoterOrderByCreatedAtDesc(election,voter);
         if(latestVoteOptional.isPresent()){
             VoteTransaction voteStatus=latestVoteOptional.get();
             switch(voteStatus.getStatus()){

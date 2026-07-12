@@ -126,7 +126,7 @@ public class CandidateServiceImpl implements CandidateService{
         boolean candidateAlreadyUploaded=electionCandidateRepository.existsByPositionElection(election);
 
         if(candidateAlreadyUploaded){
-            throw new BusinessException(CandidateErrorCode.CANDIDATES_ALREADY_EXIST);
+            throw new BusinessException(CandidateErrorCode.NON_EMPTY_CANDIDATE_LIST);
         }
         List<ElectionPosition> electionPositions = electionPositionRepository.findByElection(election);
         if(electionPositions.isEmpty()){

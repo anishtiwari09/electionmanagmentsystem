@@ -12,13 +12,17 @@ import org.day2.electionmanagmentsystem.user.User;
         })
 })
 @Data
-public class ElectionVoter extends BaseEntity {
+
+public class Voter extends BaseEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name = "election_id",nullable = false)
     private Election election;
     @ManyToOne(optional = false)
     @JoinColumn(name="user_id",nullable = false)
     private User user;
+    @ManyToOne(optional = false,fetch = FetchType.LAZY)
+    @JoinColumn(name = "added_by", nullable = false)
+    private User addedBy;
 
 }
 

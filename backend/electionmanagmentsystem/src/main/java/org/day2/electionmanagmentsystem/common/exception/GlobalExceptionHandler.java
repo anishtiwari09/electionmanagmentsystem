@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-//    @ExceptionHandler(BusinessException.class)
+    @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ApiResponse<Void>> handleBusinessException( BusinessException exception){
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)

@@ -5,7 +5,7 @@ import type { ElectionResponse } from "@/features/election/types/election";
 export const voterApi = {
   async getMyElections(userId: string, status?: string) {
     const { data } = await apiClient.get<ApiResponse<ElectionResponse>>(
-      "/voter/elections",
+      "/voters/elections",
       {
         params: { status },
         headers: { "x-userId": userId },

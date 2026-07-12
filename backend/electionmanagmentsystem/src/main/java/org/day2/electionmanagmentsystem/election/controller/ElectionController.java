@@ -27,7 +27,7 @@ public class ElectionController {
     private final CandidateService candidateService;
     private final VoterService voterService;
   @GetMapping("")
-   public ResponseEntity<ApiResponse<ElectionsResponse>> getElection(@ModelAttribute GetElectionsRequest electionsRequest,  @RequestHeader("x-userId") UUID userId){
+   public ResponseEntity<ApiResponse<ElectionsResponse>> getElections(@ModelAttribute GetElectionsRequest electionsRequest,  @RequestHeader("x-userId") UUID userId){
 
       ElectionsResponse electionsResponse= electionService.getElections(userId,electionsRequest);
 

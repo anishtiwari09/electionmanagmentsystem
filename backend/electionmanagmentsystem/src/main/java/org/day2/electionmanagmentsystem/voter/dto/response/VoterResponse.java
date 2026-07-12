@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Data
 @Builder
-public class ElectionVoterResponse {
+public class VoterResponse {
     private UUID userId;
     private UUID id;
     private String firstName;

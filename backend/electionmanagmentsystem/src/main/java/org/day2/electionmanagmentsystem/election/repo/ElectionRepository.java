@@ -6,6 +6,8 @@ import org.day2.electionmanagmentsystem.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import javax.swing.text.html.Option;
 
@@ -19,10 +21,20 @@ public interface ElectionRepository extends JpaRepository<Election,Long> {
     Page<Election> findByUserPublicIdOrderByUpdatedAtDesc(UUID userPublicId,Pageable pageable);
     Page<Election> findByUserPublicIdAndStatusInOrderByUpdatedAtDesc(
             UUID userPublicId,
-            List<ElectionStatus> status,
+            List<ElectionStatus> statuses,
             Pageable pageable
 
     );
-
-    UUID user(User user);
+    @Query("""
+        SELECT ev.election
+        FROM Voter ev
+        WHERE ev.user = :user
+          AND (:status IS NULL OR ev.election.status = :status)
+        ORDER BY ev.election.updatedAt DESC
+        """)
+    Page<Election> findAllByVoter(
+            @Param("user") User user,
+            @Param("status") ElectionStatus status,
+            Pageable pageable
+    );
 }

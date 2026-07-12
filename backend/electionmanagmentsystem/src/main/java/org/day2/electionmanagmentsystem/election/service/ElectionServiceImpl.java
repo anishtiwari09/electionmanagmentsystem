@@ -23,8 +23,8 @@ import org.day2.electionmanagmentsystem.position.repo.ElectionPositionRepository
 import org.day2.electionmanagmentsystem.user.User;
 import org.day2.electionmanagmentsystem.user.repo.UserRepository;
 import org.day2.electionmanagmentsystem.voter.Voter;
-import org.day2.electionmanagmentsystem.voter.dto.response.ElectionVoterResponse;
-import org.day2.electionmanagmentsystem.voter.mapper.ElectionVoterMapper;
+import org.day2.electionmanagmentsystem.voter.dto.response.VoterResponse;
+import org.day2.electionmanagmentsystem.voter.mapper.VoterMapper;
 import org.day2.electionmanagmentsystem.voter.repo.VoterRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -50,7 +50,7 @@ public class ElectionServiceImpl implements ElectionService{
     private final ElectionPositionRepository electionPositionRepository;
     private final ElectionPositionMapper electionPositionMapper;
    private final ElectionMapper electionMapper;
-    private final ElectionVoterMapper electionVoterMapper;
+    private final VoterMapper voterMapper;
 
     private final Election validateAndGetElection(UUID electionPublicId, UUID userPublicId){
         Election election = electionRepository.findByPublicId(electionPublicId).orElseThrow(()-> new BusinessException(ErrorCode.ELECTION_NOT_FOUND));
@@ -204,13 +204,13 @@ throw new BusinessException(ElectionErrorCode.NOT_ALLOWED);
         Election election = electionRepository.findByPublicIdAndUserPublicId(electionId,userId).orElseThrow(()-> new BusinessException(ErrorCode.ELECTION_NOT_FOUND));
         List<Voter> voters = voterRepository.findByElection(election);
         List <ElectionPosition> electionPositions= electionPositionRepository.findByElectionOrderByNameAsc(election);
-        List <ElectionVoterResponse> electionVoterResponses = electionVoterMapper.toResponses(voters);
+        List <VoterResponse> voterRespons = voterMapper.toResponses(voters);
         List <ElectionCandidate> electionCandidates=null;
         if(!electionPositions.isEmpty())
             electionCandidates =electionCandidateRepository.findByPositionIn(electionPositions);
 
         List <ElectionPositionResponse> electionPositionResponseList= electionPositionMapper.toResponses(electionPositions,electionCandidates);
-        return electionMapper.toDetailsResponse(election,electionPositionResponseList,electionVoterResponses);
+        return electionMapper.toDetailsResponse(election,electionPositionResponseList, voterRespons);
     }
 
 

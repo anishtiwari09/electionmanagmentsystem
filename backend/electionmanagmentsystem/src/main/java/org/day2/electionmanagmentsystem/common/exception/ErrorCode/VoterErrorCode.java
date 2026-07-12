@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum VoterErrorCode implements BaseErrorCode{
-    NON_EMPTY_VOTER_LIST("Voter list is already exists");
+    NON_EMPTY_VOTER_LIST("Voter list is already exists"), NO_ELECTION_FOUND("No election found");
     final private String message;
 
 }

@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import org.day2.electionmanagmentsystem.common.enums.ElectionStatus;
 import org.day2.electionmanagmentsystem.position.dto.response.ElectionPositionResponse;
-import org.day2.electionmanagmentsystem.voter.dto.response.ElectionVoterResponse;
+import org.day2.electionmanagmentsystem.voter.dto.response.VoterResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.UUID;
 @Builder
 
 public class ElectionDetailsResponse {
-    private List<ElectionVoterResponse> voters;
+    private List<VoterResponse> voters;
     private List <ElectionPositionResponse> positions;
     private UUID electionId;
     private String name;
